@@ -15,9 +15,7 @@ export default class extends BaseSchema {
       table.string('bio', 1024).nullable()
       table.string('subscription_type', 255).nullable()
       table.string('location', 255).nullable()
-      /**
-       * Uses timestampz for PostgreSQL and DATETIME2 for MSSQL
-       */
+      
       table.timestamp('created_at', { useTz: true }).notNullable()
       table.timestamp('updated_at', { useTz: true }).notNullable()
     })

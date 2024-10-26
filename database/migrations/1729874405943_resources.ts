@@ -6,10 +6,10 @@ export default class extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('resource_id').primary()
-      table.integer('user_id').unsigned().references('user_id').inTable('users').onDelete('CASCADE')
+      table.integer('user_id').unsigned()//.references('user_id').inTable('users').onDelete('CASCADE')
       table.string('title', 255).notNullable()
       table.string('description', 1024).notNullable()
-      table.integer('level_id').unsigned().references('level_id').inTable('levels').onDelete('SET NULL')
+      table.integer('level_id').unsigned()//.references('level_id').inTable('levels').onDelete('SET NULL')
       table.string('category', 255).notNullable()
       table.dateTime('data').notNullable()
       
