@@ -16,9 +16,6 @@ export default class Set extends BaseModel {
   public name: string
 
   @column()
-  public categoryId: number | null
-
-  @column()
   public access: boolean
 
   @column.date()

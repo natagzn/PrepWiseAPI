@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.increments('QuestionSet_id').primary()
       table.integer('user_id').unsigned()//.references('user_id').inTable('users').onDelete('CASCADE')
       table.string('name', 255).notNullable()
-      table.integer('category_id').unsigned()//.references('category_id').inTable('categories').onDelete('SET NULL')
+      //table.integer('category_id').unsigned()//.references('category_id').inTable('categories').onDelete('SET NULL')
       table.boolean('access').notNullable().defaultTo(false)
       table.date('data').notNullable()
       table.integer('level_id').unsigned()//.references('level_id').inTable('levels').onDelete('SET NULL')
