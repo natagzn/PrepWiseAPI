@@ -8,7 +8,7 @@ export default class AddForeignKeys extends BaseSchema {
       table.foreign('status_id').references('status_id').inTable('statuses').onDelete('SET NULL')
     })
 
-    this.schema.alterTable('feedback', (table) => {
+    this.schema.alterTable('feedbacks', (table) => {
       table.foreign('user_id').references('user_id').inTable('users').onDelete('CASCADE')
     })
 
@@ -26,9 +26,9 @@ export default class AddForeignKeys extends BaseSchema {
       table.foreign('level_id').references('level_id').inTable('levels').onDelete('SET NULL')
     })
 
-    this.schema.alterTable('resources_likes', (table) => {
+    this.schema.alterTable('resource_likes', (table) => {
       table.foreign('user_id').references('user_id').inTable('users').onDelete('CASCADE')
-      table.foreign('resource_id').references('resources_id').inTable('resources').onDelete('CASCADE')
+      table.foreign('resource_id').references('resource_id').inTable('resources').onDelete('CASCADE')
     })
 
     this.schema.alterTable('resources', (table) => {
@@ -38,37 +38,37 @@ export default class AddForeignKeys extends BaseSchema {
 
     this.schema.alterTable('subscriptions', (table) => {
       table.foreign('user_id').references('user_id').inTable('users').onDelete('CASCADE')
-      table.foreign('type_id').references('subscriptions_type_id').inTable('subscriptions_types').onDelete('CASCADE')
+      table.foreign('type_id').references('subscription_type_id').inTable('subscription_types').onDelete('CASCADE')
     })
 
-    this.schema.alterTable('date_of_visit', (table) => {
+    this.schema.alterTable('date_of_visits', (table) => {
       table.foreign('user_id').references('user_id').inTable('users').onDelete('CASCADE')
     })
 
-    this.schema.alterTable('complaint', (table) => {
+    this.schema.alterTable('complaints', (table) => {
       table.foreign('user_id').references('user_id').inTable('users').onDelete('CASCADE')
       table.foreign('user_id_compl').references('user_id').inTable('users').onDelete('CASCADE')
-      table.foreign('resources_id').references('resources_id').inTable('resources').onDelete('CASCADE')
+      table.foreign('resources_id').references('resource_id').inTable('resources').onDelete('CASCADE')
       table.foreign('set_id').references('QuestionSet_id').inTable('sets').onDelete('CASCADE')
     })
 
-    this.schema.alterTable('favourite', (table) => {
+    this.schema.alterTable('favourites', (table) => {
       table.foreign('user_id').references('user_id').inTable('users').onDelete('CASCADE')
       table.foreign('question_list_id').references('QuestionSet_id').inTable('sets').onDelete('CASCADE')
       table.foreign('folder_id').references('folder_id').inTable('folders').onDelete('CASCADE')
-      table.foreign('resource_id').references('resources_id').inTable('resources').onDelete('CASCADE')
+      table.foreign('resource_id').references('resource_id').inTable('resources').onDelete('CASCADE')
     })
 
     this.schema.alterTable('questions', (table) => {
       table.foreign('list_id').references('QuestionSet_id').inTable('sets').onDelete('CASCADE')
     })
 
-    this.schema.alterTable('set_in_folder', (table) => {
+    this.schema.alterTable('set_in_folders', (table) => {
       table.foreign('set_id').references('QuestionSet_id').inTable('sets').onDelete('CASCADE')
       table.foreign('folder_id').references('folder_id').inTable('folders').onDelete('CASCADE')
     })
 
-    this.schema.alterTable('category_in_set', (table) => {
+    this.schema.alterTable('category_in_sets', (table) => {
       table.foreign('question_set_id').references('QuestionSet_id').inTable('sets').onDelete('CASCADE')
       table.foreign('category_id').references('category_id').inTable('categories').onDelete('CASCADE')
     })
@@ -83,7 +83,7 @@ export default class AddForeignKeys extends BaseSchema {
       table.foreign('question_id').references('question_id').inTable('questions').onDelete('CASCADE')
     })
 
-    this.schema.alterTable('request_for_help', (table) => {
+    this.schema.alterTable('request_for_helps', (table) => {
       table.foreign('friend_id').references('friend_id').inTable('friends').onDelete('CASCADE')
       table.foreign('question_id').references('question_id').inTable('questions').onDelete('CASCADE')
     })
