@@ -2,6 +2,9 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import {schema, rules, validator} from '@ioc:Adonis/Core/Validator'
 import RegisterValidator from 'App/Validators/RegisterValidator'
 import User from 'App/Models/User'
+import DateOfVisit from 'App/Models/DateOfVisit'
+import { DateTime } from 'luxon'
+
 
 export default class AuthController {
 
@@ -14,8 +17,19 @@ export default class AuthController {
       reporter: validator.reporters.vanilla,
     })
 
+
+
     try {
       const token = await auth.use("api").attempt(payload.email, payload.password)
+
+      const userId = auth.use("api").user?.userId // Отримуємо ID користувача
+      if (userId) {
+        await DateOfVisit.create({
+          userId: userId,
+          date: DateTime.local(),
+        })
+      }
+
       return response.json({status:200, message:"Loged is successfully!", token:token})
     } catch (error) {
       return response.unauthorized("Invalid credentials"+error)
