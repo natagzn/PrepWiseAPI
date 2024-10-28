@@ -1,1 +1,1 @@
-web: node ace serve --watch
+web: npm run build
