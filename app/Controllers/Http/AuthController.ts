@@ -4,6 +4,8 @@ import RegisterValidator from 'App/Validators/RegisterValidator'
 import User from 'App/Models/User'
 import DateOfVisit from 'App/Models/DateOfVisit'
 import { DateTime } from 'luxon'
+import Set from 'App/Models/Set'
+
 
 
 export default class AuthController {
@@ -16,8 +18,6 @@ export default class AuthController {
       }),
       reporter: validator.reporters.vanilla,
     })
-
-
 
     try {
       const token = await auth.use("api").attempt(payload.email, payload.password)
@@ -41,7 +41,19 @@ export default class AuthController {
   public async register({request, response}:HttpContextContract){
     const payload = await request.validate(RegisterValidator)
     try {
-      await User.create(payload)
+      const user = await User.create(payload)
+
+      // Create default set for the user
+      await Set.create({
+        userId: user.userId,
+        name: 'Default Set',
+        access: true,
+        data: DateTime.local(),
+        levelId: 3,  // Set a default level if applicable
+        shared: false
+      })
+
+      //await User.create(payload)
       return response.status(200).json({
         message:"Account created successfully"
       })
