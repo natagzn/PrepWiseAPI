@@ -23,3 +23,23 @@ Route.group(() => {
   Route.delete('/levels/:id', 'LevelsController.delete')
 }).middleware("auth:api")
 }).prefix("/api");
+
+Route.group(() => {
+  Route.group(() => {
+    Route.get('/questions', 'QuestionsController.index')
+    Route.post('/questions', 'QuestionsController.create')
+    Route.get('/questions/:id', 'QuestionsController.show')
+    Route.put('/questions/:id', 'QuestionsController.update')
+    Route.delete('/questions/:id', 'QuestionsController.delete')    
+  }).middleware("auth:api")
+  }).prefix("/api");
+
+  Route.group(() => {
+    Route.group(() => {
+      Route.get('/sets', 'SetsController.index')
+      Route.post('/sets', 'SetsController.create')
+      Route.get('/sets/:id', 'SetsController.show')
+      Route.put('/sets/:id', 'SetsController.update')
+      Route.delete('/sets/:id', 'SetsController.delete')          
+    }).middleware("auth:api")
+    }).prefix("/api");
