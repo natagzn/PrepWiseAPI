@@ -1,11 +1,12 @@
 import { DateTime } from 'luxon'
 import { column, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm' // Імпорт BelongsTo
 import User from './User'
-import Status from './Status'
 
-export default class Friend extends BaseModel {
+export default class People extends BaseModel {
+  public static table = 'people';  // Замість 'friends'
+
   @column({ isPrimary: true })
-  public friendId: number
+  public peopleId: number
 
   @column()
   public userId: number
@@ -21,9 +22,6 @@ export default class Friend extends BaseModel {
 
   @belongsTo(() => User, { foreignKey: 'friendUserId' })
   public friendUser: BelongsTo<typeof User> // Оновлено тип
-
-  @belongsTo(() => Status)
-  public status: BelongsTo<typeof Status> // Оновлено тип
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
