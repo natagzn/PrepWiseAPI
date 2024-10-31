@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
 import Level from './Level'
+import Question from './Question'
 
 
 export default class Set extends BaseModel {
@@ -34,6 +35,8 @@ export default class Set extends BaseModel {
   @belongsTo(() => Level, { foreignKey: 'levelId' })
   public level: BelongsTo<typeof Level>
 
+  @hasMany(() => Question, { foreignKey: 'listId' }) // Зв'язок з питаннями
+  public questions: HasMany<typeof Question>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

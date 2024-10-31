@@ -1,8 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Set from 'App/Models/Set'
 import { DateTime } from 'luxon'
-import User from 'App/Models/User'
-
+import Question from 'App/Models/Question'
 
 export default class SetsController {
   
@@ -23,6 +22,23 @@ export default class SetsController {
     }
   }
 
+
+  public async getUserSetsWithQuestions({ auth, response }: HttpContextContract) {
+    try {
+      const user = await auth.authenticate()
+      const sets = await Set.query()
+        .where('userId', user.userId)
+        .preload('questions'); // Попередньо завантажуємо питання
+
+      return response.status(200).json(sets);
+    } catch (error) {
+      return response.status(500).json({ message: 'Failed to retrieve sets with questions', error });
+    }
+  }
+
+
+
+  
   // Get a set by ID
   public async show({ params, response }: HttpContextContract) {
     try {

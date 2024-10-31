@@ -5,7 +5,7 @@ import User from 'App/Models/User'
 
 
 
-export default class PeoplesController {
+export default class PeopleController {
   // Додавання друга
   public async addFriend({ auth, request, response }: HttpContextContract) {
     // Отримання ID поточного авторизованого користувача
@@ -75,20 +75,52 @@ export default class PeoplesController {
     return response.status(200).json({ mutualFriendsIds })
   }
 
-
-
-
-  // Видалити друга
-  public async deleteFriend({ params, response }: HttpContextContract) {
-    const friendId = params.id
-
-    const friendship = await People.find(friendId)
-
-    if (!friendship) {
-      return response.status(404).json({ message: 'Friendship not found' })
+  public async getSubscribers({ auth, response }: HttpContextContract) {
+    const userId = auth.user?.userId
+  
+    if (!userId) {
+      return response.status(401).json({ message: 'Unauthorized' })
     }
-
-    await friendship.delete()
-    return response.status(200).json({ message: 'Friend removed successfully' })
+  
+    // Отримання ID всіх користувачів, які додали поточного користувача у підписки
+    const subscribers = await People.query()
+      .where('friendUserId', userId)
+      .select('userId')
+  
+    // Створення масиву тільки з значень userId
+    const subscriberIds = subscribers.map(subscriber => subscriber.userId)
+  
+    return response.status(200).json({ subscriberIds })
   }
+
+
+  // Видалення підписки на конкретного користувача
+  public async deleteFriend({ auth, params, response }: HttpContextContract) {
+    const userId = auth.user?.userId
+  
+    if (!userId) {
+      return response.status(401).json({ message: 'Unauthorized' })
+    }
+  
+    // Отримуємо ID користувача, на якого підписаний поточний користувач, з параметрів запиту
+    const friendUserId = params.id; // зміна з friendUserId на id
+  
+    // Знаходимо запис про підписку
+    const subscription = await People.query()
+      .where('userId', userId)
+      .where('friendUserId', friendUserId)
+      .first()
+  
+    // Якщо запис про підписку не знайдено
+    if (!subscription) {
+      return response.status(404).json({ message: 'Subscription not found' })
+    }
+  
+    // Видалення підписки
+    await subscription.delete()
+  
+    return response.status(200).json({ message: 'Subscription removed successfully' })
+  }
+  
+
 }
