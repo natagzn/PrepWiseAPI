@@ -6,7 +6,7 @@ import Level from './Level'
 
 export default class Set extends BaseModel {
   @column({ isPrimary: true })
-  public questionSetId: number
+  public QuestionSet_id: number
 
   @column()
   public userId: number
@@ -33,8 +33,6 @@ export default class Set extends BaseModel {
 
   @belongsTo(() => Level, { foreignKey: 'levelId' })
   public level: BelongsTo<typeof Level>
-
-
 
 
   @column.dateTime({ autoCreate: true })
