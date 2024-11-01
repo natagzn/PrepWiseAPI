@@ -20,7 +20,7 @@ export default class Resource extends BaseModel {
 
   @column()
   public levelId: number
-
+  
   @column()
   public categoryId: number
 

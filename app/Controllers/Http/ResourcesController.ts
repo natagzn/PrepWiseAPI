@@ -8,7 +8,7 @@ export default class ResourcesController {
   public async create({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
-      const data = request.only(['title', 'description', 'levelId', 'category'])
+      const data = request.only(['title', 'description', 'levelId', 'categoryId'])
 
       const resource = await Resource.create({
         ...data,
