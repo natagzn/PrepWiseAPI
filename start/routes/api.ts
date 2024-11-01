@@ -72,3 +72,16 @@ Route.group(() => {
 
         }).middleware("auth:api")
         }).prefix("/api");
+
+
+      Route.group(() => {
+        Route.group(() => {
+          Route.post('/categories', 'CategoriesController.create')          
+          Route.get('/categories', 'CategoriesController.index')            
+          Route.put('/categories/:id', 'CategoriesController.update')       
+          Route.delete('/categories/:id', 'CategoriesController.delete') 
+  
+          Route.post('/sets/:setId/categories/:categoryId', 'CategoriesController.addCategoryToSet') 
+          Route.delete('/sets/:setId/categories/:categoryId', 'CategoriesController.removeCategoryFromSet') 
+        }).middleware("auth:api")
+        }).prefix("/api");
