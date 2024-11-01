@@ -99,7 +99,13 @@ Route.group(() => {
 Route.group(() => {
   Route.group(() => {
     Route.post('/favourites/set', 'FavouritesController.addSetToFavourites')
+    Route.delete('/favourites/set', 'FavouritesController.removeSetFromFavourites')
+
     Route.post('/favourites/folder', 'FavouritesController.addFolderToFavourites')
-    Route.post('/favourites/resource', 'FavouritesController.addResourceToFavourites')      
+    Route.delete('/favourites/folder', 'FavouritesController.removeFolderFromFavourites')
+
+    Route.post('/favourites/resource', 'FavouritesController.addResourceToFavourites')
+    Route.delete('/favourites/resource', 'FavouritesController.removeResourceFromFavourites')
+      
   }).middleware("auth:api")
   }).prefix("/api");
