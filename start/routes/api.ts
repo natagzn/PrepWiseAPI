@@ -59,3 +59,17 @@ Route.group(() => {
 
       }).middleware("auth:api")
       }).prefix("/api");
+
+      Route.group(() => {
+        Route.group(() => {
+          Route.get('/folders', 'FoldersController.index')
+          Route.get('/folders/:id', 'FoldersController.show')
+          Route.post('/folders', 'FoldersController.create')
+          Route.put('/folders/:id', 'FoldersController.update')
+          Route.delete('/folders/:id', 'FoldersController.delete')
+
+          Route.post('/folders/:id/add-set', 'FoldersController.addSetToFolder')
+          Route.get('/folders-with-all', 'FoldersController.getUserFoldersWithSetsAndQuestions')
+
+        }).middleware("auth:api")
+        }).prefix("/api");
