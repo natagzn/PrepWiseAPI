@@ -95,3 +95,11 @@ Route.group(() => {
             Route.delete('/resources/:id', 'ResourcesController.delete')
           }).middleware("auth:api")
           }).prefix("/api");
+
+Route.group(() => {
+  Route.group(() => {
+    Route.post('/favourites/set', 'FavouritesController.addSetToFavourites')
+    Route.post('/favourites/folder', 'FavouritesController.addFolderToFavourites')
+    Route.post('/favourites/resource', 'FavouritesController.addResourceToFavourites')      
+  }).middleware("auth:api")
+  }).prefix("/api");
