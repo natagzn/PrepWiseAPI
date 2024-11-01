@@ -77,7 +77,7 @@ Route.group(() => {
       Route.group(() => {
         Route.group(() => {
           Route.post('/categories', 'CategoriesController.create')          
-          Route.get('/categories', 'CategoriesController.index')            
+          Route.get('/categories', 'CategoriesController.getCategories')            
           Route.put('/categories/:id', 'CategoriesController.update')       
           Route.delete('/categories/:id', 'CategoriesController.delete') 
   

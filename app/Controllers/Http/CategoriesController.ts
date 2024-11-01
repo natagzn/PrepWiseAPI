@@ -16,11 +16,10 @@ export default class CategoriesController {
     }
   }
 
-  // Get all categories
-  public async index({ response }: HttpContextContract) {
+  public async getCategories({ response }: HttpContextContract) {
     try {
-      const categories = await Category.query().preload('sets')
-      return response.status(200).json(categories)
+      const categories = await Category.all()
+      return response.status(200).json({ message: 'Categories retrieved successfully', categories })
     } catch (error) {
       return response.status(500).json({ message: 'Failed to retrieve categories', error })
     }
