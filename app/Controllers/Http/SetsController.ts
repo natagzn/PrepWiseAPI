@@ -1,7 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Set from 'App/Models/Set'
 import { DateTime } from 'luxon'
-import Question from 'App/Models/Question'
 
 export default class SetsController {
   
@@ -37,35 +36,38 @@ export default class SetsController {
   }
 
 
-
-  
-  // Get a set by ID
-  public async show({ params, response }: HttpContextContract) {
+  public async update({ auth, request, params, response }: HttpContextContract) {
     try {
-      const set = await Set.findOrFail(params.id)
-      return response.status(200).json(set)
-    } catch (error) {
-      return response.status(404).json({ message: 'Set not found' })
-    }
-  }
+      const user = await auth.authenticate()
+      const setId = params.id
+      const set = await Set.query()
+        .where('QuestionSet_id', setId)
+        .where('userId', user.userId)
+        .firstOrFail()
 
-  // Update a set by ID
-  public async update({ params, request, response }: HttpContextContract) {
-    try {
-      const set = await Set.findOrFail(params.id)
-      const data = request.only(['name', 'access', 'data', 'level_id', 'shared'])
+      const data = request.only(['name', 'access', 'level_id', 'shared'])
+      data.access = data.access === 'true';
+      data.shared = data.shared === 'true';
       set.merge(data)
       await set.save()
+
       return response.status(200).json({ message: 'Set updated successfully', set })
     } catch (error) {
       return response.status(500).json({ message: 'Failed to update set', error })
     }
   }
 
-  // Delete a set by ID
-  public async delete({ params, response }: HttpContextContract) {
+
+
+public async delete({ auth, params, response }: HttpContextContract) {
     try {
-      const set = await Set.findOrFail(params.id)
+      const user = await auth.authenticate()
+      const setId = params.id
+      const set = await Set.query()
+        .where('QuestionSet_id', setId)
+        .where('userId', user.userId)
+        .firstOrFail()
+
       await set.delete()
       return response.status(200).json({ message: 'Set deleted successfully' })
     } catch (error) {
