@@ -106,6 +106,7 @@ Route.group(() => {
 
     Route.post('/favourites/resource', 'FavouritesController.addResourceToFavourites')
     Route.delete('/favourites/resource', 'FavouritesController.removeResourceFromFavourites')
-      
+    
+    Route.get('/favourites', 'FavouritesController.getFavourites')
   }).middleware("auth:api")
   }).prefix("/api");

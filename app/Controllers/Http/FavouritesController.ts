@@ -1,5 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Favourite from 'App/Models/Favourite'
+import Folder from 'App/Models/Folder'
+import Set from 'App/Models/Set'
+import Resource from 'App/Models/Resource'
 
 export default class FavouritesController {
   
@@ -123,4 +126,44 @@ export default class FavouritesController {
     }
   }
 
+
+
+
+
+
+
+  public async getFavourites({ auth, response }: HttpContextContract) {
+    try {
+      const user = await auth.authenticate()
+
+      // Отримання обраних папок
+      const folders = await Folder.query()
+        .whereIn('folderId', (query) =>
+          query.from('favourites').select('folder_id').where('user_id', user.userId)
+        )
+
+      // Отримання обраних сетів
+      const sets = await Set.query()
+        .whereIn('QuestionSet_id', (query) =>
+          query.from('favourites').select('question_list_id').where('user_id', user.userId)
+        )
+
+      // Отримання обраних ресурсів
+      const resources = await Resource.query()
+        .whereIn('resourceId', (query) =>
+          query.from('favourites').select('resource_id').where('user_id', user.userId)
+        )
+
+      return response.status(200).json({
+        message: 'User favourites retrieved successfully',
+        favourites: {
+          folders,
+          sets,
+          resources
+        }
+      })
+    } catch (error) {
+      return response.status(500).json({ message: 'Failed to retrieve user favourites', error })
+    }
+  }
 }
