@@ -85,3 +85,13 @@ Route.group(() => {
           Route.delete('/sets/:setId/categories/:categoryId', 'CategoriesController.removeCategoryFromSet') 
         }).middleware("auth:api")
         }).prefix("/api");
+
+        Route.group(() => {
+          Route.group(() => {
+            Route.post('/resources', 'ResourcesController.create')         
+            Route.get('/resources', 'ResourcesController.index')           // Отримання всіх ресурсів
+            Route.get('/resources/:id', 'ResourcesController.show')        // Отримання конкретного ресурсу
+            Route.put('/resources/:id', 'ResourcesController.update')      // Оновлення ресурсу
+            Route.delete('/resources/:id', 'ResourcesController.delete')
+          }).middleware("auth:api")
+          }).prefix("/api");

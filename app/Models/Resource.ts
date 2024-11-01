@@ -3,6 +3,7 @@ import { column, BaseModel, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:
 import User from './User'
 import Level from './Level'
 import ResourceLike from './ResourceLike'
+import Category from './Category'
 
 export default class Resource extends BaseModel {
   @column({ isPrimary: true })
@@ -21,7 +22,7 @@ export default class Resource extends BaseModel {
   public levelId: number
 
   @column()
-  public category: string
+  public categoryId: number
 
   @column.dateTime({ autoCreate: true })
   public data: DateTime
@@ -34,6 +35,10 @@ export default class Resource extends BaseModel {
 
   @hasMany(() => ResourceLike, { foreignKey: 'resourceId' })
   public likes: HasMany<typeof ResourceLike>
+
+  @belongsTo(() => Category, { foreignKey: 'categoryId' })
+  public category: BelongsTo<typeof Category>
+
 
 
   @column.dateTime({ autoCreate: true })
