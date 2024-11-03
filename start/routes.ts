@@ -18,11 +18,39 @@
 |
 */
 
-import Route from '@ioc:Adonis/Core/Route'
+import Route from '@ioc:Adonis/Core/Route';
 
 import "./routes/api";
 
-
 Route.get('/', async () => {
-  return { hello: 'world' }
-})
+  return { hello: 'world' };
+});
+
+/*import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from '../config/swagger';
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
+
+// Використання HttpContextContract для типізації
+Route.get('/api-docs', async ({ request, response }: HttpContextContract) => {
+  response.type('text/html'); // Встановлення типу контенту як HTML
+  response.send(swaggerUi.setup(swaggerSpec)); // Відправлення документації Swagger
+});
+
+// Додавання JSON-версії специфікації Swagger
+Route.get('/swagger.json', async ({ response }: HttpContextContract) => {
+  response.type('application/json');
+  response.send(swaggerSpec);
+});*/
+/*
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from '../config/swagger';
+
+Route.get('/api-docs', async ({ response }) => {
+  // Налаштування Swagger UI
+  response.header('Content-Type', 'text/html');
+  const swaggerHtml = swaggerUi.generateHTML(swaggerSpec);
+  response.send(swaggerHtml);
+});*/
+
+

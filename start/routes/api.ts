@@ -150,3 +150,16 @@ Route.group(() => {
 
 }).middleware("auth:api")
 }).prefix("/api");
+
+
+
+/*import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from '../config/swagger';
+
+Route.get('/api-docs', async ({ response }) => {
+  // Налаштування Swagger UI
+  response.header('Content-Type', 'text/html');
+  const swaggerHtml = swaggerUi.generateHTML(swaggerSpec);
+  response.send(swaggerHtml);
+});*/
+
