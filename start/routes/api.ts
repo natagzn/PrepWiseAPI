@@ -119,3 +119,34 @@ Route.group(() => {
       Route.delete('/resources-likes/:resourceId', 'ResourcesLikesController.destroy');
     }).middleware("auth:api")
     }).prefix("/api");
+
+    Route.group(() => {
+      Route.group(() => {
+        Route.post('/complaints', 'ComplaintsController.create')
+        Route.get('/complaints', 'ComplaintsController.index')
+        Route.get('/complaints/:id', 'ComplaintsController.show')
+        Route.put('/complaints/:id', 'ComplaintsController.update')
+        Route.delete('/complaints/:id', 'ComplaintsController.delete')
+      }).middleware("auth:api")
+      }).prefix("/api");
+
+      Route.group(() => {
+        Route.group(() => {
+          Route.get('shared-sets', 'SharedSetsController.index') 
+          Route.post('shared-sets', 'SharedSetsController.create')
+          Route.get('shared-sets/:id', 'SharedSetsController.show') 
+          Route.put('shared-sets/:id', 'SharedSetsController.update') 
+          Route.delete('shared-sets/:id', 'SharedSetsController.destroy') 
+          
+          Route.get('shared-sets/:id/author', 'SharedSetsController.getAuthorId')
+        }).middleware("auth:api")
+        }).prefix("/api");
+
+Route.group(() => {
+Route.group(() => {
+  Route.post('/request-for-help', 'RequestForHelpsController.create')
+  Route.post('/help-answers', 'HelpAnswersController.create')
+  Route.get('/help-answers/:id', 'HelpAnswersController.show')
+
+}).middleware("auth:api")
+}).prefix("/api");
