@@ -9,7 +9,7 @@ export default class UpdateResourcesAddCategoryId extends BaseSchema {
       table.dropColumn('category')
       
       // Додаємо нове поле categoryId і встановлюємо зв'язок з таблицею categories
-      table.integer('categoryId').unsigned().references('categoryId').inTable('categories').onDelete('CASCADE').notNullable()
+      table.integer('categoryId').unsigned().references('category_id').inTable('categories').onDelete('CASCADE').notNullable()
     })
   }
 

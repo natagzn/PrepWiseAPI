@@ -106,7 +106,7 @@ export default class AddForeignKeys extends BaseSchema {
     this.schema.alterTable('sets', (table) => {
       table.dropForeign(['user_id', 'level_id'])
     })
-    this.schema.alterTable('resources_likes', (table) => {
+    this.schema.alterTable('resource_likes', (table) => {
       table.dropForeign(['user_id', 'resource_id'])
     })
     this.schema.alterTable('resources', (table) => {
