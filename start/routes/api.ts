@@ -110,3 +110,12 @@ Route.group(() => {
     Route.get('/favourites', 'FavouritesController.getFavourites')
   }).middleware("auth:api")
   }).prefix("/api");
+
+  Route.group(() => {
+    Route.group(() => {
+      Route.post('/resources-likes', 'ResourcesLikesController.create');
+      Route.get('/resources-likes/:resourceId', 'ResourcesLikesController.index');
+      Route.put('/resources-likes/:resourceId', 'ResourcesLikesController.update');
+      Route.delete('/resources-likes/:resourceId', 'ResourcesLikesController.destroy');
+    }).middleware("auth:api")
+    }).prefix("/api");
