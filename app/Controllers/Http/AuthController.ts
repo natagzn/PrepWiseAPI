@@ -5,7 +5,7 @@ import RegisterValidator from 'App/Validators/RegisterValidator'
 import DateOfVisit from 'App/Models/DateOfVisit'
 import { DateTime } from 'luxon'
 //import Set from 'App/Models/Set'
-import Level from 'App/Models/Level'
+//import Level from 'App/Models/Level'
 
 
 
@@ -122,12 +122,12 @@ export default class AuthController {
    *       500:
    *         description: Something went wrong
    */
-  private async getFirstLevelId(): Promise<number | null> {
+  /*private async getFirstLevelId(): Promise<number | null> {
     const level = await Level.query().orderBy('levelId', 'asc').first()
     return level ? level.levelId : null
-  }
+  }*/
   public async register({request, response}:HttpContextContract){
-    const payload = await request.validate(RegisterValidator)
+    //const payload = await request.validate(RegisterValidator)
     try {
       //const user = await User.create(payload)
       //const firstLevelId = await this.getFirstLevelId()
