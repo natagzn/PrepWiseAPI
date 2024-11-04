@@ -10,6 +10,48 @@ import Set from 'App/Models/Set'
 
 export default class AuthController {
 
+  /**
+   * @swagger
+   * /login:
+   *   post:
+   *     summary: User login
+   *     tags: [Authentication]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               email:
+   *                 type: string
+   *                 example: user@example.com
+   *               password:
+   *                 type: string
+   *                 example: password123
+   *     responses:
+   *       200:
+   *         description: Successfully logged in
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: "Logged in successfully!"
+   *                 token:
+   *                   type: string
+   *                   example: "Bearer your.jwt.token"
+   *       401:
+   *         description: Invalid credentials
+   *       500:
+   *         description: Something went wrong
+   */
+
   public async login({request, response, auth}:HttpContextContract){
     const payload = await request.validate({
         schema:schema.create({
@@ -37,7 +79,48 @@ export default class AuthController {
   }
 
 
-
+  /**
+   * @swagger
+   * /register:
+   *   post:
+   *     summary: User registration
+   *     tags: [Authentication]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 example: John
+   *               surname:
+   *                 type: string
+   *                 example: Doe
+   *               username:
+   *                 type: string
+   *                 example: johndoe
+   *               email:
+   *                 type: string
+   *                 example: user@example.com
+   *               password:
+   *                 type: string
+   *                 example: password123
+   *     responses:
+   *       200:
+   *         description: Account created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: "Account created successfully"
+   *       500:
+   *         description: Something went wrong
+   */
   public async register({request, response}:HttpContextContract){
     const payload = await request.validate(RegisterValidator)
     try {
@@ -63,12 +146,63 @@ export default class AuthController {
   }
 
 
+  /**
+   * @swagger
+   * /user:
+   *   get:
+   *     summary: Get user information
+   *     tags: [Authentication]
+   *     responses:
+   *       200:
+   *         description: User information retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: integer
+   *                   example: 200
+   *                 user:
+   *                   type: object
+   *                   properties:
+   *                     userId:
+   *                       type: integer
+   *                     name:
+   *                       type: string
+   *                     surname:
+   *                       type: string
+   *                     username:
+   *                       type: string
+   *                     email:
+   *                       type: string
+   *                     
+   *       401:
+   *         description: Unauthorized access
+   */
   public async getUser({response, auth}:HttpContextContract){
     const user = auth.use("api").user;
     return response.json({status: 200, user});
   }
 
-
+  /**
+   * @swagger
+   * /logout:
+   *   post:
+   *     summary: User logout
+   *     tags: [Authentication]
+   *     responses:
+   *       200:
+   *         description: Logged out successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: "Logged out successfully!"
+   */
   public async logout({response, auth}:HttpContextContract){
     await auth.use("api").logout()
     return response.json({message:"Logged out successfuly!"})

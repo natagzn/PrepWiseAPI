@@ -5,6 +5,30 @@ import Set from 'App/Models/Set'
 import Resource from 'App/Models/Resource'
 
 export default class FavouritesController {
+  /**
+   * @swagger
+   * /favourites/sets:
+   *   post:
+   *     summary: Add a set to favourites
+   *     tags: [Favourites]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               questionListId:
+   *                 type: integer
+   *                 description: The ID of the set to add to favourites
+   *     responses:
+   *       201:
+   *         description: Set added to favourites successfully
+   *       500:
+   *         description: Failed to add set to favourites
+   */
   
   public async addSetToFavourites({ auth, request, response }: HttpContextContract) {
     try {
@@ -22,7 +46,32 @@ export default class FavouritesController {
     }
   }
 
-
+  /**
+   * @swagger
+   * /favourites/sets:
+   *   delete:
+   *     summary: Remove a set from favourites
+   *     tags: [Favourites]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               questionListId:
+   *                 type: integer
+   *                 description: The ID of the set to remove from favourites
+   *     responses:
+   *       200:
+   *         description: Set removed from favourites successfully
+   *       404:
+   *         description: Favourite set not found
+   *       500:
+   *         description: Failed to remove set from favourites
+   */
   public async removeSetFromFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
@@ -46,7 +95,30 @@ export default class FavouritesController {
 
 
 
-
+  /**
+   * @swagger
+   * /favourites/folders:
+   *   post:
+   *     summary: Add a folder to favourites
+   *     tags: [Favourites]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               folderId:
+   *                 type: integer
+   *                 description: The ID of the folder to add to favourites
+   *     responses:
+   *       201:
+   *         description: Folder added to favourites successfully
+   *       500:
+   *         description: Failed to add folder to favourites
+   */
   public async addFolderToFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
@@ -63,6 +135,33 @@ export default class FavouritesController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /favourites/folders:
+   *   delete:
+   *     summary: Remove a folder from favourites
+   *     tags: [Favourites]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               folderId:
+   *                 type: integer
+   *                 description: The ID of the folder to remove from favourites
+   *     responses:
+   *       200:
+   *         description: Folder removed from favourites successfully
+   *       404:
+   *         description: Favourite folder not found
+   *       500:
+   *         description: Failed to remove folder from favourites
+   */
   public async removeFolderFromFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
@@ -88,7 +187,30 @@ export default class FavouritesController {
 
 
 
-
+  /**
+   * @swagger
+   * /favourites/resources:
+   *   post:
+   *     summary: Add a resource to favourites
+   *     tags: [Favourites]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               resourceId:
+   *                 type: integer
+   *                 description: The ID of the resource to add to favourites
+   *     responses:
+   *       201:
+   *         description: Resource added to favourites successfully
+   *       500:
+   *         description: Failed to add resource to favourites
+   */
   public async addResourceToFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
@@ -105,6 +227,33 @@ export default class FavouritesController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /favourites/resources:
+   *   delete:
+   *     summary: Remove a resource from favourites
+   *     tags: [Favourites]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               resourceId:
+   *                 type: integer
+   *                 description: The ID of the resource to remove from favourites
+   *     responses:
+   *       200:
+   *         description: Resource removed from favourites successfully
+   *       404:
+   *         description: Favourite resource not found
+   *       500:
+   *         description: Failed to remove resource from favourites
+   */
   public async removeResourceFromFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
@@ -131,7 +280,40 @@ export default class FavouritesController {
 
 
 
-
+  /**
+   * @swagger
+   * /favourites:
+   *   get:
+   *     summary: Get user favourites
+   *     tags: [Favourites]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: User favourites retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 favourites:
+   *                   type: object
+   *                   properties:
+   *                     folders:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                     sets:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                     resources:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *       500:
+   *         description: Failed to retrieve user favourites
+   */
   public async getFavourites({ auth, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()

@@ -2,6 +2,49 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import ResourceLike from 'App/Models/ResourceLike';
 
 export default class ResourcesLikesController {
+  /**
+   * @swagger
+   * /resources/likes:
+   *   post:
+   *     summary: Add a like to a resource
+   *     tags: [Resources]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               resourceId:
+   *                 type: integer
+   *                 description: The ID of the resource to like.
+   *               like:
+   *                 type: boolean
+   *                 description: Indicates whether the resource is liked or not.
+   *     responses:
+   *       201:
+   *         description: Like added successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 resourceLike:
+   *                   type: object
+   *                   properties:
+   *                     userId:
+   *                       type: integer
+   *                     resourceId:
+   *                       type: integer
+   *                     like:
+   *                       type: boolean
+   *       500:
+   *         description: Failed to add like
+   */
   // Додати лайк
   public async create({ auth, request, response }: HttpContextContract) {
     try {
@@ -27,6 +70,40 @@ export default class ResourcesLikesController {
     }    
   }
 
+  /**
+   * @swagger
+   * /resources/{resourceId}/likes:
+   *   get:
+   *     summary: Get likes for a resource
+   *     tags: [Resources]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: resourceId
+   *         required: true
+   *         description: The ID of the resource to retrieve likes for.
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Likes retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 type: object
+   *                 properties:
+   *                   userId:
+   *                     type: integer
+   *                   resourceId:
+   *                     type: integer
+   *                   like:
+   *                     type: boolean
+   *       500:
+   *         description: Failed to retrieve likes
+   */
   // Отримати лайки для ресурсу
   public async index({ params, response }: HttpContextContract) {
     try {
@@ -38,6 +115,55 @@ export default class ResourcesLikesController {
     }
   }
 
+
+
+  /**
+   * @swagger
+   * /resources/{resourceId}/likes:
+   *   put:
+   *     summary: Update a like (dislike) for a resource
+   *     tags: [Resources]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: resourceId
+   *         required: true
+   *         description: The ID of the resource to update the like for.
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               like:
+   *                 type: boolean
+   *                 description: Indicates whether the resource is liked or not.
+   *     responses:
+   *       200:
+   *         description: Like updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 resourceLike:
+   *                   type: object
+   *                   properties:
+   *                     userId:
+   *                       type: integer
+   *                     resourceId:
+   *                       type: integer
+   *                     like:
+   *                       type: boolean
+   *       500:
+   *         description: Failed to update like
+   */
   // Оновити лайк (дизлайк)
   public async update({ auth, request, params, response }: HttpContextContract) {
     try {
@@ -59,6 +185,28 @@ export default class ResourcesLikesController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /resources/{resourceId}/likes:
+   *   delete:
+   *     summary: Remove a like from a resource
+   *     tags: [Resources]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: resourceId
+   *         required: true
+   *         description: The ID of the resource to remove the like from.
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Like removed successfully
+   *       500:
+   *         description: Failed to remove like
+   */
   // Видалити лайк
   public async destroy({ auth, params, response }: HttpContextContract) {
     try {

@@ -2,6 +2,39 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Level from 'App/Models/Level'
 
 export default class LevelController {
+  /**
+   * @swagger
+   * /levels:
+   *   post:
+   *     summary: Create a new level
+   *     tags: [Levels]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 example: "Beginner"
+   *     responses:
+   *       201:
+   *         description: Level created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 level:
+   *                   $ref: '#/components/schemas/Level'
+   *       500:
+   *         description: Failed to create level
+   */
   // Create a new level
   public async create({ request, response }: HttpContextContract) {
     try {
@@ -17,6 +50,27 @@ export default class LevelController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /levels:
+   *   get:
+   *     summary: Read all levels
+   *     tags: [Levels]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Levels retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Level'
+   *       500:
+   *         description: Failed to fetch levels
+   */
   // Read all levels
   public async index({ response }: HttpContextContract) {
     try {
@@ -27,6 +81,32 @@ export default class LevelController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /levels/{id}:
+   *   get:
+   *     summary: Read a single level by ID
+   *     tags: [Levels]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The level ID
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Level retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Level'
+   *       404:
+   *         description: Level not found
+   */
   // Read a single level by ID
   public async show({ params, response }: HttpContextContract) {
     try {
@@ -37,6 +117,49 @@ export default class LevelController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /levels/{id}:
+   *   put:
+   *     summary: Update a level by ID
+   *     tags: [Levels]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The level ID
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 example: "Intermediate"
+   *     responses:
+   *       200:
+   *         description: Level updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 level:
+   *                   $ref: '#/components/schemas/Level'
+   *       404:
+   *         description: Level not found
+   *       500:
+   *         description: Failed to update level
+   */
   // Update a level by ID
   public async update({ params, request, response }: HttpContextContract) {
     try {
@@ -53,6 +176,29 @@ export default class LevelController {
     }
   }
 
+  /**
+   * @swagger
+   * /levels/{id}:
+   *   delete:
+   *     summary: Delete a level by ID
+   *     tags: [Levels]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The level ID
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Level deleted successfully
+   *       404:
+   *         description: Level not found
+   *       500:
+   *         description: Failed to delete level
+   */
   // Delete a level by ID
   public async delete({ params, response }: HttpContextContract) {
     try {

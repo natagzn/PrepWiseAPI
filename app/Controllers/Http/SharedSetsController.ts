@@ -2,6 +2,36 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import SharedSet from 'App/Models/SharedSet'
 
 export default class SharedSetsController {
+   /**
+   * @swagger
+   * /shared-sets:
+   *   post:
+   *     summary: Create a new SharedSet
+   *     tags: [SharedSets]
+   *     security:
+   *       - bearerAuth: []  # Користувач повинен бути авторизований
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               setId:
+   *                 type: integer
+   *               userId:
+   *                 type: integer
+   *               edit:
+   *                 type: boolean
+   *             required:
+   *               - setId
+   *               - userId
+   *     responses:
+   *       201:
+   *         description: SharedSet created successfully
+   *       500:
+   *         description: Failed to create SharedSet
+   */
   // Створення нового запису
   public async create({ request, response }: HttpContextContract) {
     try {
@@ -21,6 +51,21 @@ export default class SharedSetsController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /shared-sets:
+   *   get:
+   *     summary: Retrieve all SharedSets
+   *     tags: [SharedSets]
+   *     security:
+   *       - bearerAuth: []  # Користувач повинен бути авторизований
+   *     responses:
+   *       200:
+   *         description: SharedSets retrieved successfully
+   *       500:
+   *         description: Failed to retrieve SharedSets
+   */
   // Отримання всіх записів
   public async index({ response }: HttpContextContract) {
     try {
@@ -31,6 +76,30 @@ export default class SharedSetsController {
     }
   }
 
+
+   /**
+   * @swagger
+   * /shared-sets/{id}:
+   *   get:
+   *     summary: Retrieve a specific SharedSet
+   *     tags: [SharedSets]
+   *     security:
+   *       - bearerAuth: []  # Користувач повинен бути авторизований
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the SharedSet
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: SharedSet retrieved successfully
+   *       404:
+   *         description: SharedSet not found
+   *       500:
+   *         description: Failed to retrieve SharedSet
+   */
   // Отримання одного запису
   public async show({ params, response }: HttpContextContract) {
     try {
@@ -46,6 +115,39 @@ export default class SharedSetsController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /shared-sets/{id}:
+   *   put:
+   *     summary: Update a specific SharedSet
+   *     tags: [SharedSets]
+   *     security:
+   *       - bearerAuth: []  # Користувач повинен бути авторизований
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the SharedSet
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               edit:
+   *                 type: boolean
+   *     responses:
+   *       200:
+   *         description: SharedSet updated successfully
+   *       404:
+   *         description: SharedSet not found
+   *       500:
+   *         description: Failed to update SharedSet
+   */
   // Оновлення запису
   public async update({ params, request, response }: HttpContextContract) {
     try {
@@ -74,6 +176,31 @@ export default class SharedSetsController {
     }
   }
 
+
+
+  /**
+   * @swagger
+   * /shared-sets/{id}:
+   *   delete:
+   *     summary: Delete a specific SharedSet
+   *     tags: [SharedSets]
+   *     security:
+   *       - bearerAuth: []  # Користувач повинен бути авторизований
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the SharedSet
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: SharedSet deleted successfully
+   *       404:
+   *         description: SharedSet not found
+   *       500:
+   *         description: Failed to delete SharedSet
+   */
   // Видалення запису
   public async destroy({ params, response }: HttpContextContract) {
     try {
@@ -91,6 +218,31 @@ export default class SharedSetsController {
     }
   }
 
+
+
+  /**
+   * @swagger
+   * /shared-sets/{id}/author:
+   *   get:
+   *     summary: Retrieve the author ID of a SharedSet
+   *     tags: [SharedSets]
+   *     security:
+   *       - bearerAuth: []  
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the SharedSet
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Author ID retrieved successfully
+   *       404:
+   *         description: SharedSet or associated Set not found
+   *       500:
+   *         description: Failed to retrieve author ID
+   */
   // Запит для отримання ID автора поширеного сету
   public async getAuthorId({ params, response }: HttpContextContract) {
     try {

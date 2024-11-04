@@ -6,6 +6,46 @@ import User from 'App/Models/User'
 
 
 export default class PeopleController {
+  /**
+   * @swagger
+   * /friends:
+   *   post:
+   *     summary: Add a friend
+   *     tags: [Friends]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               friendUserId:
+   *                 type: integer
+   *                 example: 2
+   *     responses:
+   *       201:
+   *         description: Friend request sent
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     userId:
+   *                       type: integer
+   *                     friendUserId:
+   *                       type: integer
+   *       401:
+   *         description: Unauthorized
+   *       404:
+   *         description: Friend not found
+   */
   // Додавання друга
   public async addFriend({ auth, request, response }: HttpContextContract) {
     // Отримання ID поточного авторизованого користувача
@@ -32,6 +72,29 @@ export default class PeopleController {
   }
   
 
+  /**
+   * @swagger
+   * /friends/added-ids:
+   *   get:
+   *     summary: Get added user IDs
+   *     tags: [Friends]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: List of added user IDs
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 addedUserIds:
+   *                   type: array
+   *                   items:
+   *                     type: integer
+   *       401:
+   *         description: Unauthorized
+   */
   public async getAddedUserIds({ auth, response }: HttpContextContract) {
     const userId = auth.user?.userId
 
@@ -51,6 +114,29 @@ export default class PeopleController {
   }
 
 
+  /**
+   * @swagger
+   * /friends/mutual:
+   *   get:
+   *     summary: Get mutual friends
+   *     tags: [Friends]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: List of mutual friends IDs
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 mutualFriendsIds:
+   *                   type: array
+   *                   items:
+   *                     type: integer
+   *       401:
+   *         description: Unauthorized
+   */
   public async getFriends({ auth, response }: HttpContextContract) {
     const userId = auth.user?.userId
 
@@ -75,6 +161,31 @@ export default class PeopleController {
     return response.status(200).json({ mutualFriendsIds })
   }
 
+
+
+  /**
+   * @swagger
+   * /friends/subscribers:
+   *   get:
+   *     summary: Get subscribers
+   *     tags: [Friends]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: List of subscriber IDs
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 subscriberIds:
+   *                   type: array
+   *                   items:
+   *                     type: integer
+   *       401:
+   *         description: Unauthorized
+   */
   public async getSubscribers({ auth, response }: HttpContextContract) {
     const userId = auth.user?.userId
   
@@ -94,6 +205,31 @@ export default class PeopleController {
   }
 
 
+
+
+/**
+   * @swagger
+   * /friends/{id}:
+   *   delete:
+   *     summary: Remove a friend subscription
+   *     tags: [Friends]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the friend user to remove
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Subscription removed successfully
+   *       401:
+   *         description: Unauthorized
+   *       404:
+   *         description: Subscription not found
+   */
   // Видалення підписки на конкретного користувача
   public async deleteFriend({ auth, params, response }: HttpContextContract) {
     const userId = auth.user?.userId

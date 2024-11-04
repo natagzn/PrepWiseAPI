@@ -3,6 +3,35 @@ import Resource from 'App/Models/Resource'
 import { DateTime } from 'luxon'
 
 export default class ResourcesController {
+  /**
+   * @swagger
+   * /resources:
+   *   post:
+   *     summary: Create a new resource
+   *     tags: [Resources]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               title:
+   *                 type: string
+   *               description:
+   *                 type: string
+   *               levelId:
+   *                 type: integer
+   *               categoryId:
+   *                 type: integer
+   *     responses:
+   *       201:
+   *         description: Resource created successfully
+   *       500:
+   *         description: Failed to create resource
+   */
   
   // Створення нового ресурсу
   public async create({ auth, request, response }: HttpContextContract) {
@@ -22,6 +51,18 @@ export default class ResourcesController {
     }
   }
 
+  /**
+   * @swagger
+   * /resources:
+   *   get:
+   *     summary: Retrieve all resources
+   *     tags: [Resources]
+   *     responses:
+   *       200:
+   *         description: Resources retrieved successfully
+   *       500:
+   *         description: Failed to retrieve resources
+   */
   // Отримання всіх ресурсів
   public async index({ response }: HttpContextContract) {
     try {
@@ -32,6 +73,26 @@ export default class ResourcesController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /resources/{id}:
+   *   get:
+   *     summary: Retrieve a resource by ID
+   *     tags: [Resources]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The resource ID
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Resource retrieved successfully
+   *       404:
+   *         description: Resource not found
+   */
   // Отримання ресурсу за ID
   public async show({ params, response }: HttpContextContract) {
     try {
@@ -48,6 +109,46 @@ export default class ResourcesController {
     }
   }
 
+
+
+  /**
+   * @swagger
+   * /resources/{id}:
+   *   put:
+   *     summary: Update a resource
+   *     tags: [Resources]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The resource ID
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               title:
+   *                 type: string
+   *               description:
+   *                 type: string
+   *               levelId:
+   *                 type: integer
+   *               categoryId:
+   *                 type: integer
+   *     responses:
+   *       200:
+   *         description: Resource updated successfully
+   *       403:
+   *         description: Unauthorized to update this resource
+   *       500:
+   *         description: Failed to update resource
+   */
   // Оновлення ресурсу
   public async update({ auth, params, request, response }: HttpContextContract) {
     try {
@@ -67,6 +168,32 @@ export default class ResourcesController {
     }
   }
 
+
+
+
+  /**
+   * @swagger
+   * /resources/{id}:
+   *   delete:
+   *     summary: Delete a resource
+   *     tags: [Resources]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The resource ID
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Resource deleted successfully
+   *       403:
+   *         description: Unauthorized to delete this resource
+   *       500:
+   *         description: Failed to delete resource
+   */
   // Видалення ресурсу
   public async delete({ auth, params, response }: HttpContextContract) {
     try {

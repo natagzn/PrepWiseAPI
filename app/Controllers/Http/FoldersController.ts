@@ -7,6 +7,30 @@ import SetInFolder from 'App/Models/SetInFolder'
 
 
 export default class FoldersController {
+  /**
+   * @swagger
+   * /folders:
+   *   post:
+   *     summary: Create a new folder
+   *     tags: [Folders]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 example: "My New Folder"
+   *     responses:
+   *       201:
+   *         description: Folder created successfully
+   *       500:
+   *         description: Failed to create folder
+   */
   // Створення нової папки
   public async create({ auth, request, response }: HttpContextContract) {
     try {
@@ -26,6 +50,33 @@ export default class FoldersController {
   }
 
 
+  /**
+   * @swagger
+   * /folders/{id}/sets:
+   *   post:
+   *     summary: Add a set to a folder
+   *     tags: [Folders]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the folder
+   *         schema:
+   *           type: integer
+   *       - in: query
+   *         name: setId
+   *         required: true
+   *         description: The ID of the set to add
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       201:
+   *         description: Set added to folder successfully
+   *       500:
+   *         description: Failed to add set to folder
+   */
   public async addSetToFolder({ params, request, response }: HttpContextContract) {
     try {
       const { setId } = request.only(['setId']) // Отримуємо ID набору з запиту
@@ -54,6 +105,22 @@ export default class FoldersController {
 
 
 
+  /**
+   * @swagger
+   * /folders:
+   *   get:
+   *     summary: Get all folders of the authenticated user
+   *     tags: [Folders]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: User folders with sets and questions
+   *       401:
+   *         description: User not authenticated
+   *       500:
+   *         description: Failed to fetch folders
+   */
   public async getUserFoldersWithSetsAndQuestions({ auth, response }: HttpContextContract) {
     try {
       // Отримання ID поточного користувача
@@ -105,6 +172,28 @@ export default class FoldersController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /folders/{id}:
+   *   get:
+   *     summary: Get a folder by ID
+   *     tags: [Folders]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the folder to retrieve
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Folder retrieved successfully
+   *       404:
+   *         description: Folder not found
+   */
   // Отримання папки за ID
   public async show({ params, response }: HttpContextContract) {
     try {
@@ -115,6 +204,38 @@ export default class FoldersController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /folders/{id}:
+   *   put:
+   *     summary: Update a folder by ID
+   *     tags: [Folders]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the folder to update
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 example: "Updated Folder Name"
+   *     responses:
+   *       200:
+   *         description: Folder updated successfully
+   *       500:
+   *         description: Failed to update folder
+   */
   // Оновлення папки за ID
   public async update({ params, request, response }: HttpContextContract) {
     try {
@@ -130,6 +251,28 @@ export default class FoldersController {
     }
   }
 
+
+  /**
+   * @swagger
+   * /folders/{id}:
+   *   delete:
+   *     summary: Delete a folder by ID
+   *     tags: [Folders]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: The ID of the folder to delete
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Folder deleted successfully
+   *       500:
+   *         description: Failed to delete folder
+   */
   // Видалення папки за ID
   public async delete({ params, response }: HttpContextContract) {
     try {

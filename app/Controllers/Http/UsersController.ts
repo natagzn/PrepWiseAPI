@@ -5,6 +5,43 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class UsersController {
 
+  /**
+   * @swagger
+   * /profile:
+   *   get:
+   *     summary: Get user profile
+   *     tags: [Users]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: User profile retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 user_id:
+   *                   type: integer
+   *                 name:
+   *                   type: string
+   *                 surname:
+   *                   type: string
+   *                 username:
+   *                   type: string
+   *                 email:
+   *                   type: string
+   *                 avatar_url:
+   *                   type: string
+   *                 bio:
+   *                   type: string
+   *                 subscription_type:
+   *                   type: string
+   *                 location:
+   *                   type: string
+   *       401:
+   *         description: User not authenticated
+   */
   public async showProfile({ auth, response }: HttpContextContract) {
     try {
       // Отримуємо аутентифікованого користувача
@@ -23,6 +60,33 @@ export default class UsersController {
   }
 
 
+  /**
+   * @swagger
+   * /profile/password:
+   *   put:
+   *     summary: Change user password
+   *     tags: [Users]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               currentPassword:
+   *                 type: string
+   *                 description: Current password of the user
+   *               newPassword:
+   *                 type: string
+   *                 description: New password of the user
+   *     responses:
+   *       200:
+   *         description: Password changed successfully
+   *       401:
+   *         description: Incorrect current password
+   */
   public async changePassword({ auth, request, response }: HttpContextContract) {
     // Валідація запиту
     const changePasswordSchema = schema.create({
@@ -60,7 +124,75 @@ export default class UsersController {
 
 
 
-
+  /**
+   * @swagger
+   * /profile:
+   *   put:
+   *     summary: Update user profile
+   *     tags: [Users]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               avatarUrl:
+   *                 type: string
+   *                 format: uri
+   *                 description: URL of the user's avatar
+   *               bio:
+   *                 type: string
+   *                 description: User biography
+   *               email:
+   *                 type: string
+   *                 format: email
+   *                 description: User's email address
+   *               location:
+   *                 type: string
+   *                 description: User's location
+   *               name:
+   *                 type: string
+   *                 description: User's name
+   *               surname:
+   *                 type: string
+   *                 description: User's surname
+   *     responses:
+   *       200:
+   *         description: Profile updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     user_id:
+   *                       type: integer
+   *                     name:
+   *                       type: string
+   *                     surname:
+   *                       type: string
+   *                     username:
+   *                       type: string
+   *                     email:
+   *                       type: string
+   *                     avatar_url:
+   *                       type: string
+   *                     bio:
+   *                       type: string
+   *                     subscription_type:
+   *                       type: string
+   *                     location:
+   *                       type: string
+   *       400:
+   *         description: Failed to update profile
+   */
   public async updateProfile({ auth, request, response }: HttpContextContract) {
     try {
       // Отримати аутентифікованого користувача
