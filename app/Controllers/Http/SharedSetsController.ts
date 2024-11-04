@@ -1,6 +1,5 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import SharedSet from 'App/Models/SharedSet'
-import Set from 'App/Models/Set'
 
 export default class SharedSetsController {
   // Створення нового запису
