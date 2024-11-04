@@ -1,11 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import {schema, rules, validator} from '@ioc:Adonis/Core/Validator'
-//import RegisterValidator from 'App/Validators/RegisterValidator'
-//import User from 'App/Models/User'
+import RegisterValidator from 'App/Validators/RegisterValidator'
+import User from 'App/Models/User'
 import DateOfVisit from 'App/Models/DateOfVisit'
 import { DateTime } from 'luxon'
-//import Set from 'App/Models/Set'
-//import Level from 'App/Models/Level'
+import Set from 'App/Models/Set'
+import Level from 'App/Models/Level'
 
 
 
@@ -122,18 +122,18 @@ export default class AuthController {
    *       500:
    *         description: Something went wrong
    */
-  /*private async getFirstLevelId(): Promise<number | null> {
+  private async getFirstLevelId(): Promise<number | null> {
     const level = await Level.query().orderBy('levelId', 'asc').first()
     return level ? level.levelId : null
-  }*/
-  public async register({response}:HttpContextContract){
-    //const payload = await request.validate(RegisterValidator)
+  }
+  public async register({request, response}:HttpContextContract){
+    const payload = await request.validate(RegisterValidator)
     try {
-      //const user = await User.create(payload)
-      //const firstLevelId = await this.getFirstLevelId()
+      const user = await User.create(payload)
+      const firstLevelId = await this.getFirstLevelId()
 
       // Create default set for the user
-    /* await Set.create({
+      await Set.create({
         userId: user.userId,
         name: 'Default Set',
         access: true,
@@ -141,7 +141,7 @@ export default class AuthController {
         levelId: firstLevelId,  // Set a default level if applicable
         shared: false
       })
-      */
+
       //await User.create(payload)
       return response.status(200).json({
         message:"Account created successfully"
