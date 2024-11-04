@@ -133,7 +133,7 @@ export default class AuthController {
       const firstLevelId = await this.getFirstLevelId()
 
       // Create default set for the user
-      await Set.create({
+    /* await Set.create({
         userId: user.userId,
         name: 'Default Set',
         access: true,
@@ -141,7 +141,7 @@ export default class AuthController {
         levelId: firstLevelId,  // Set a default level if applicable
         shared: false
       })
-
+      */
       //await User.create(payload)
       return response.status(200).json({
         message:"Account created successfully"
