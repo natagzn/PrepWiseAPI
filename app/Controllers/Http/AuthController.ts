@@ -126,7 +126,7 @@ export default class AuthController {
     const level = await Level.query().orderBy('levelId', 'asc').first()
     return level ? level.levelId : null
   }*/
-  public async register({request, response}:HttpContextContract){
+  public async register({response}:HttpContextContract){
     //const payload = await request.validate(RegisterValidator)
     try {
       //const user = await User.create(payload)
