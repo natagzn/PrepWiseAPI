@@ -24,7 +24,7 @@ Route.group(() => {
   Route.delete('/levels/:id', 'LevelsController.delete')
 }).middleware("auth:api")
 }).prefix("/api");
-Route.post('/levels', 'LevelsController.create')
+Route.post('/api/levels', 'LevelsController.create')
 
 
 Route.group(() => {
