@@ -2,9 +2,9 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import SharedSet from 'App/Models/SharedSet'
 
 export default class SharedSetsController {
-   /**
+  /**
    * @swagger
-   * /shared-sets:
+   * /api/shared-sets:
    *   post:
    *     summary: Create a new SharedSet
    *     tags: [SharedSets]
@@ -54,7 +54,7 @@ export default class SharedSetsController {
 
   /**
    * @swagger
-   * /shared-sets:
+   * /api/shared-sets:
    *   get:
    *     summary: Retrieve all SharedSets
    *     tags: [SharedSets]
@@ -77,9 +77,9 @@ export default class SharedSetsController {
   }
 
 
-   /**
+  /**
    * @swagger
-   * /shared-sets/{id}:
+   * /api/shared-sets/{id}:
    *   get:
    *     summary: Retrieve a specific SharedSet
    *     tags: [SharedSets]
@@ -118,7 +118,7 @@ export default class SharedSetsController {
 
   /**
    * @swagger
-   * /shared-sets/{id}:
+   * /api/shared-sets/{id}:
    *   put:
    *     summary: Update a specific SharedSet
    *     tags: [SharedSets]
@@ -180,7 +180,7 @@ export default class SharedSetsController {
 
   /**
    * @swagger
-   * /shared-sets/{id}:
+   * /api/shared-sets/{id}:
    *   delete:
    *     summary: Delete a specific SharedSet
    *     tags: [SharedSets]
@@ -222,7 +222,7 @@ export default class SharedSetsController {
 
   /**
    * @swagger
-   * /shared-sets/{id}/author:
+   * /api/shared-sets/{id}/author:
    *   get:
    *     summary: Retrieve the author ID of a SharedSet
    *     tags: [SharedSets]

@@ -5,7 +5,7 @@ import { DateTime } from 'luxon'
 export default class SetsController {
   /**
    * @swagger
-   * /sets:
+   * /api/sets:
    *   post:
    *     summary: Create a new set
    *     tags: [Sets]
@@ -66,7 +66,7 @@ export default class SetsController {
 
   /**
    * @swagger
-   * /sets/questions:
+   * /api/sets/questions:
    *   get:
    *     summary: Retrieve all user sets with questions
    *     tags: [Sets]
@@ -100,7 +100,7 @@ export default class SetsController {
 
   /**
    * @swagger
-   * /sets/{id}:
+   * /api/sets/{id}:
    *   put:
    *     summary: Update a set
    *     tags: [Sets]
@@ -171,7 +171,7 @@ export default class SetsController {
 
   /**
    * @swagger
-   * /sets/{id}:
+   * /api/sets/{id}:
    *   delete:
    *     summary: Delete a set
    *     tags: [Sets]

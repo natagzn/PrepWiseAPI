@@ -5,6 +5,7 @@ import User from 'App/Models/User'
 import DateOfVisit from 'App/Models/DateOfVisit'
 import { DateTime } from 'luxon'
 import Set from 'App/Models/Set'
+import Level from 'App/Models/Level'
 
 
 
@@ -12,7 +13,7 @@ export default class AuthController {
 
   /**
    * @swagger
-   * /login:
+   * /api/auth/login:
    *   post:
    *     summary: User login
    *     tags: [Authentication]
@@ -81,7 +82,7 @@ export default class AuthController {
 
   /**
    * @swagger
-   * /register:
+   * /api/auth/register:
    *   post:
    *     summary: User registration
    *     tags: [Authentication]
@@ -121,10 +122,15 @@ export default class AuthController {
    *       500:
    *         description: Something went wrong
    */
+  private async getFirstLevelId(): Promise<number | null> {
+    const level = await Level.query().orderBy('levelId', 'asc').first()
+    return level ? level.levelId : null
+  }
   public async register({request, response}:HttpContextContract){
     const payload = await request.validate(RegisterValidator)
     try {
       const user = await User.create(payload)
+      const firstLevelId = await this.getFirstLevelId()
 
       // Create default set for the user
       await Set.create({
@@ -132,7 +138,7 @@ export default class AuthController {
         name: 'Default Set',
         access: true,
         data: DateTime.local(),
-        levelId: 3,  // Set a default level if applicable
+        levelId: firstLevelId,  // Set a default level if applicable
         shared: false
       })
 
@@ -148,7 +154,7 @@ export default class AuthController {
 
   /**
    * @swagger
-   * /user:
+   * /api/user:
    *   get:
    *     summary: Get user information
    *     tags: [Authentication]
@@ -187,7 +193,7 @@ export default class AuthController {
 
   /**
    * @swagger
-   * /logout:
+   * /api/logout:
    *   post:
    *     summary: User logout
    *     tags: [Authentication]

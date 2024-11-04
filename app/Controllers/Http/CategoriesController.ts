@@ -7,7 +7,7 @@ export default class CategoriesController {
   
   /**
    * @swagger
-   * /categories:
+   * /api/categories:
    *   post:
    *     summary: Create a new category
    *     tags: [Categories]
@@ -39,7 +39,7 @@ export default class CategoriesController {
 
   /**
    * @swagger
-   * /categories:
+   * /api/categories:
    *   get:
    *     summary: Retrieve all categories
    *     tags: [Categories]
@@ -60,7 +60,7 @@ export default class CategoriesController {
 
   /**
    * @swagger
-   * /categories/{id}:
+   * /api/categories/{id}:
    *   put:
    *     summary: Update a category
    *     tags: [Categories]
@@ -100,7 +100,7 @@ export default class CategoriesController {
 
   /**
    * @swagger
-   * /categories/{id}:
+   * /api/categories/{id}:
    *   delete:
    *     summary: Delete a category
    *     tags: [Categories]
@@ -129,7 +129,7 @@ export default class CategoriesController {
 
   /**
    * @swagger
-   * /sets/{setId}/categories/{categoryId}:
+   * /api/sets/{setId}/categories/{categoryId}:
    *   post:
    *     summary: Add a category to a set
    *     tags: [Categories, Sets]
@@ -179,7 +179,7 @@ export default class CategoriesController {
 
   /**
    * @swagger
-   * /sets/{setId}/categories/{categoryId}:
+   * /api/sets/{setId}/categories/{categoryId}:
    *   delete:
    *     summary: Remove a category from a set
    *     tags: [Categories, Sets]

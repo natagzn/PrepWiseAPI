@@ -4,7 +4,7 @@ import Level from 'App/Models/Level'
 export default class LevelController {
   /**
    * @swagger
-   * /levels:
+   * /api/levels:
    *   post:
    *     summary: Create a new level
    *     tags: [Levels]
@@ -53,7 +53,7 @@ export default class LevelController {
 
   /**
    * @swagger
-   * /levels:
+   * /api/levels:
    *   get:
    *     summary: Read all levels
    *     tags: [Levels]
@@ -84,7 +84,7 @@ export default class LevelController {
 
   /**
    * @swagger
-   * /levels/{id}:
+   * /api/levels/{id}:
    *   get:
    *     summary: Read a single level by ID
    *     tags: [Levels]
@@ -120,7 +120,7 @@ export default class LevelController {
 
   /**
    * @swagger
-   * /levels/{id}:
+   * /api/levels/{id}:
    *   put:
    *     summary: Update a level by ID
    *     tags: [Levels]
@@ -178,7 +178,7 @@ export default class LevelController {
 
   /**
    * @swagger
-   * /levels/{id}:
+   * /api/levels/{id}:
    *   delete:
    *     summary: Delete a level by ID
    *     tags: [Levels]

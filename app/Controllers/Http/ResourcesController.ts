@@ -5,7 +5,7 @@ import { DateTime } from 'luxon'
 export default class ResourcesController {
   /**
    * @swagger
-   * /resources:
+   * /api/resources:
    *   post:
    *     summary: Create a new resource
    *     tags: [Resources]
@@ -53,7 +53,7 @@ export default class ResourcesController {
 
   /**
    * @swagger
-   * /resources:
+   * /api/resources:
    *   get:
    *     summary: Retrieve all resources
    *     tags: [Resources]
@@ -76,7 +76,7 @@ export default class ResourcesController {
 
   /**
    * @swagger
-   * /resources/{id}:
+   * /api/resources/{id}:
    *   get:
    *     summary: Retrieve a resource by ID
    *     tags: [Resources]
@@ -113,7 +113,7 @@ export default class ResourcesController {
 
   /**
    * @swagger
-   * /resources/{id}:
+   * /api/resources/{id}:
    *   put:
    *     summary: Update a resource
    *     tags: [Resources]
@@ -173,7 +173,7 @@ export default class ResourcesController {
 
   /**
    * @swagger
-   * /resources/{id}:
+   * /api/resources/{id}:
    *   delete:
    *     summary: Delete a resource
    *     tags: [Resources]

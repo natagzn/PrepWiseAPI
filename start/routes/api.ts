@@ -18,13 +18,14 @@ Route.group(()=>{
 
 Route.group(() => {
 Route.group(() => {
-  Route.post('/levels', 'LevelsController.create')
   Route.get('/levels', 'LevelsController.index')
   Route.get('/levels/:id', 'LevelsController.show')
   Route.put('/levels/:id', 'LevelsController.update')
   Route.delete('/levels/:id', 'LevelsController.delete')
 }).middleware("auth:api")
 }).prefix("/api");
+Route.post('/levels', 'LevelsController.create')
+
 
 Route.group(() => {
   Route.group(() => {

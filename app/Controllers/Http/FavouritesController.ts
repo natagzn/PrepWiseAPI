@@ -7,7 +7,7 @@ import Resource from 'App/Models/Resource'
 export default class FavouritesController {
   /**
    * @swagger
-   * /favourites/sets:
+   * /api/favourites/sets:
    *   post:
    *     summary: Add a set to favourites
    *     tags: [Favourites]
@@ -48,7 +48,7 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /favourites/sets:
+   * /api/favourites/sets:
    *   delete:
    *     summary: Remove a set from favourites
    *     tags: [Favourites]
@@ -97,7 +97,7 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /favourites/folders:
+   * /api/favourites/folders:
    *   post:
    *     summary: Add a folder to favourites
    *     tags: [Favourites]
@@ -138,7 +138,7 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /favourites/folders:
+   * /api/favourites/folders:
    *   delete:
    *     summary: Remove a folder from favourites
    *     tags: [Favourites]
@@ -189,7 +189,7 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /favourites/resources:
+   * /api/favourites/resources:
    *   post:
    *     summary: Add a resource to favourites
    *     tags: [Favourites]
@@ -230,7 +230,7 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /favourites/resources:
+   * /api/favourites/resources:
    *   delete:
    *     summary: Remove a resource from favourites
    *     tags: [Favourites]
@@ -282,7 +282,7 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /favourites:
+   * /api/favourites:
    *   get:
    *     summary: Get user favourites
    *     tags: [Favourites]

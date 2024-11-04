@@ -4,7 +4,7 @@ import Question from 'App/Models/Question'
 export default class QuestionsController {
   /**
    * @swagger
-   * /questions:
+   * /api/questions:
    *   post:
    *     summary: Create a new question
    *     tags: [Questions]
@@ -50,7 +50,7 @@ export default class QuestionsController {
 
   /**
    * @swagger
-   * /questions/{id}:
+   * /api/questions/{id}:
    *   get:
    *     summary: Get a question by ID
    *     tags: [Questions]
@@ -83,7 +83,7 @@ export default class QuestionsController {
 
   /**
    * @swagger
-   * /questions/{id}:
+   * /api/questions/{id}:
    *   put:
    *     summary: Update a question by ID
    *     tags: [Questions]
@@ -137,7 +137,7 @@ export default class QuestionsController {
 
   /**
    * @swagger
-   * /questions/{id}:
+   * /api/questions/{id}:
    *   delete:
    *     summary: Delete a question by ID
    *     tags: [Questions]
@@ -171,7 +171,7 @@ export default class QuestionsController {
 
   /**
    * @swagger
-   * /questions:
+   * /api/questions:
    *   get:
    *     summary: Get all questions
    *     tags: [Questions]

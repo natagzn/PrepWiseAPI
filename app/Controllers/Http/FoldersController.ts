@@ -9,7 +9,7 @@ import SetInFolder from 'App/Models/SetInFolder'
 export default class FoldersController {
   /**
    * @swagger
-   * /folders:
+   * /api/folders:
    *   post:
    *     summary: Create a new folder
    *     tags: [Folders]
@@ -52,7 +52,7 @@ export default class FoldersController {
 
   /**
    * @swagger
-   * /folders/{id}/sets:
+   * /api/folders/{id}/sets:
    *   post:
    *     summary: Add a set to a folder
    *     tags: [Folders]
@@ -107,7 +107,7 @@ export default class FoldersController {
 
   /**
    * @swagger
-   * /folders:
+   * /api/folders:
    *   get:
    *     summary: Get all folders of the authenticated user
    *     tags: [Folders]
@@ -175,7 +175,7 @@ export default class FoldersController {
 
   /**
    * @swagger
-   * /folders/{id}:
+   * /api/folders/{id}:
    *   get:
    *     summary: Get a folder by ID
    *     tags: [Folders]
@@ -207,7 +207,7 @@ export default class FoldersController {
 
   /**
    * @swagger
-   * /folders/{id}:
+   * /api/folders/{id}:
    *   put:
    *     summary: Update a folder by ID
    *     tags: [Folders]
@@ -254,7 +254,7 @@ export default class FoldersController {
 
   /**
    * @swagger
-   * /folders/{id}:
+   * /api/folders/{id}:
    *   delete:
    *     summary: Delete a folder by ID
    *     tags: [Folders]

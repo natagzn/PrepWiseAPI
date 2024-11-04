@@ -7,7 +7,7 @@ export default class UsersController {
 
   /**
    * @swagger
-   * /profile:
+   * /api/profile:
    *   get:
    *     summary: Get user profile
    *     tags: [Users]
@@ -62,7 +62,7 @@ export default class UsersController {
 
   /**
    * @swagger
-   * /profile/password:
+   * /api/profile/password:
    *   put:
    *     summary: Change user password
    *     tags: [Users]
@@ -126,7 +126,7 @@ export default class UsersController {
 
   /**
    * @swagger
-   * /profile:
+   * /api/profile:
    *   put:
    *     summary: Update user profile
    *     tags: [Users]

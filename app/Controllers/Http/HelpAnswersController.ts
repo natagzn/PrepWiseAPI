@@ -7,7 +7,7 @@ import { DateTime } from 'luxon'
 export default class HelpAnswersController {
   /**
    * @swagger
-   * /help-answers:
+   * /api/help-answers:
    *   post:
    *     summary: Create a new help answer
    *     tags: [HelpAnswers]
@@ -87,7 +87,7 @@ export default class HelpAnswersController {
 
   /**
    * @swagger
-   * /help-answers/{id}:
+   * /api/help-answers/{id}:
    *   get:
    *     summary: Retrieve help answers for a specific question
    *     tags: [HelpAnswers]

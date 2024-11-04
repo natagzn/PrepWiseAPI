@@ -4,7 +4,7 @@ import Complaint from 'App/Models/Complaint'
 export default class ComplaintsController {
   /**
    * @swagger
-   * /complaints:
+   * /api/complaints:
    *   post:
    *     summary: Створення скарги
    *     tags:
@@ -62,7 +62,7 @@ export default class ComplaintsController {
 
   /**
    * @swagger
-   * /complaints:
+   * /api/complaints:
    *   get:
    *     summary: Отримання всіх скарг
    *     tags:
@@ -90,7 +90,7 @@ export default class ComplaintsController {
 
   /**
    * @swagger
-   * /complaints/{id}:
+   * /api/complaints/{id}:
    *   get:
    *     summary: Отримання скарги за ID
    *     tags:
@@ -120,7 +120,7 @@ export default class ComplaintsController {
 
   /**
    * @swagger
-   * /complaints/{id}:
+   * /api/complaints/{id}:
    *   put:
    *     summary: Оновлення скарги
    *     tags:
@@ -162,7 +162,7 @@ export default class ComplaintsController {
 
   /**
    * @swagger
-   * /complaints/{id}:
+   * /api/complaints/{id}:
    *   delete:
    *     summary: Видалення скарги
    *     tags:

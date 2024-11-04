@@ -8,7 +8,7 @@ import User from 'App/Models/User'
 export default class PeopleController {
   /**
    * @swagger
-   * /friends:
+   * /api/friends:
    *   post:
    *     summary: Add a friend
    *     tags: [Friends]
@@ -74,7 +74,7 @@ export default class PeopleController {
 
   /**
    * @swagger
-   * /friends/added-ids:
+   * /api/friends/added-ids:
    *   get:
    *     summary: Get added user IDs
    *     tags: [Friends]
@@ -116,7 +116,7 @@ export default class PeopleController {
 
   /**
    * @swagger
-   * /friends/mutual:
+   * /api/friends/mutual:
    *   get:
    *     summary: Get mutual friends
    *     tags: [Friends]
@@ -165,7 +165,7 @@ export default class PeopleController {
 
   /**
    * @swagger
-   * /friends/subscribers:
+   * /api/friends/subscribers:
    *   get:
    *     summary: Get subscribers
    *     tags: [Friends]
@@ -209,7 +209,7 @@ export default class PeopleController {
 
 /**
    * @swagger
-   * /friends/{id}:
+   * /api/friends/{id}:
    *   delete:
    *     summary: Remove a friend subscription
    *     tags: [Friends]

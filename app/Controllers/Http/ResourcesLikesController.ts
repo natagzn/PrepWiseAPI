@@ -4,7 +4,7 @@ import ResourceLike from 'App/Models/ResourceLike';
 export default class ResourcesLikesController {
   /**
    * @swagger
-   * /resources/likes:
+   * /api/resources/likes:
    *   post:
    *     summary: Add a like to a resource
    *     tags: [Resources]
@@ -72,7 +72,7 @@ export default class ResourcesLikesController {
 
   /**
    * @swagger
-   * /resources/{resourceId}/likes:
+   * /api/resources/{resourceId}/likes:
    *   get:
    *     summary: Get likes for a resource
    *     tags: [Resources]
@@ -119,7 +119,7 @@ export default class ResourcesLikesController {
 
   /**
    * @swagger
-   * /resources/{resourceId}/likes:
+   * /api/resources/{resourceId}/likes:
    *   put:
    *     summary: Update a like (dislike) for a resource
    *     tags: [Resources]
@@ -188,7 +188,7 @@ export default class ResourcesLikesController {
 
   /**
    * @swagger
-   * /resources/{resourceId}/likes:
+   * /api/resources/{resourceId}/likes:
    *   delete:
    *     summary: Remove a like from a resource
    *     tags: [Resources]
