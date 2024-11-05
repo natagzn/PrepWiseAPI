@@ -96,9 +96,6 @@ export default class AuthController {
    *               name:
    *                 type: string
    *                 example: John
-   *               surname:
-   *                 type: string
-   *                 example: Doe
    *               username:
    *                 type: string
    *                 example: johndoe
@@ -106,6 +103,9 @@ export default class AuthController {
    *                 type: string
    *                 example: user@example.com
    *               password:
+   *                 type: string
+   *                 example: password123
+   *               password_confirmation:
    *                 type: string
    *                 example: password123
    *     responses:
@@ -129,7 +129,10 @@ export default class AuthController {
   public async register({request, response}:HttpContextContract){
     const payload = await request.validate(RegisterValidator)
     try {
-      const user = await User.create(payload)
+      const user = await User.create({
+        ...payload,
+        surname: 'default'
+      })
       const firstLevelId = await this.getFirstLevelId()
 
       // Create default set for the user
@@ -142,7 +145,6 @@ export default class AuthController {
         shared: false
       })
 
-      //await User.create(payload)
       return response.status(200).json({
         message:"Account created successfully"
       })
