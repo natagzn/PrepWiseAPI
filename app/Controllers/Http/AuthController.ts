@@ -131,6 +131,7 @@ export default class AuthController {
     try {
       const user = await User.create({
         ...payload,
+        name: 'default',
         surname: 'default'
       })
       const firstLevelId = await this.getFirstLevelId()

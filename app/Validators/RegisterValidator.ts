@@ -25,15 +25,13 @@ export default class RegisterValidator {
    *    ```
    */
   public schema = schema.create({
-    name:schema.string([rules.minLength(2), rules.maxLength(50)]),
-    username:schema.string([rules.minLength(2), rules.maxLength(50)]),
+    username:schema.string([rules.minLength(2), rules.maxLength(50), rules.unique({ table: 'users', column: 'username'})]),
     email:schema.string([rules.email(), rules.unique({ table: 'users', column: 'email'})]),
     password:schema.string([rules.minLength(6), rules.maxLength(30), rules.confirmed()])
   });
 
   public message: CustomMessages = {
     "email.required": "{{field}} field is required.",
-    "name.required": "{{field}} field is required.",
     "username.required": "{{field}} field is required.",
     "password.required": "{{field}} field is required.",
 
