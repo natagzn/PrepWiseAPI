@@ -1,64 +1,305 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Set from 'App/Models/Set'
 import { DateTime } from 'luxon'
+import CategoryInSet from 'App/Models/CategoryInSet';
+import Favourite from 'App/Models/Favorite';
+
+
 
 export default class SetsController {
-  /**
-   * @swagger
-   * /api/sets:
-   *   post:
-   *     summary: Create a new set
-   *     tags: [Sets]
-   *     security:
-   *       - bearerAuth: []  
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 example: "My Set"
-   *               access:
-   *                 type: boolean
-   *                 example: true
-   *               level_id:
-   *                 type: integer
-   *                 example: 1
-   *               shared:
-   *                 type: boolean
-   *                 example: false
-   *     responses:
-   *       201:
-   *         description: Set created successfully
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 message:
-   *                   type: string
-   *                 set:
-   *                   $ref: '#/components/schemas/Set'
-   *       500:
-   *         description: Failed to create set
-   */
+  
+
+/**
+ * @swagger
+ * /api/sets:
+ *   post:
+ *     summary: Create set
+ *     description: Дозволяє аутентифікованому користувачу створити новий сет з можливістю додавання до 3 категорій. Всі характеристики не є обов'язковими для стоворення, обов'язково вказати назву
+ *     tags:
+ *       - Sets
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Назва сету
+ *                 example: "My Set"
+ *                 required: true
+ *               access:
+ *                 type: boolean
+ *                 description: Відкритість сету для інших користувачів (необов'язково)
+ *                 example: false
+ *               level_id:
+ *                 type: integer
+ *                 description: Ідентифікатор рівня (необов'язково)
+ *                 example: 3
+ *               shared:
+ *                 type: boolean
+ *                 description: Прапорець для визначення, чи буде сет спільним (необов'язково)
+ *                 example: false
+ *               categories:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 description: Масив ідентифікаторів категорій, що додаються до сету (максимум 3)
+ *                 example: [1, 2]
+ *     responses:
+ *       201:
+ *         description: Сет успішно створено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Set created successfully"
+ *                 set:
+ *                   $ref: '#/components/schemas/Set'
+ *       400:
+ *         description: Занадто багато категорій або помилка валідації
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Максимум 3 категорії можна додати до сету"
+ *       500:
+ *         description: Помилка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to create set"
+ *                 error:
+ *                   type: object
+ */
+
   // Create a new set
   public async create({ auth, request, response }: HttpContextContract) {
     try {
-      const user = await auth.authenticate()
-
-      const data = request.only(['name', 'access', 'level_id', 'shared'])
+      const user = await auth.authenticate();
+  
+      // Отримання даних для створення сету, включаючи масив категорій
+      const data = request.only(['name', 'access', 'level_id', 'shared']);
+      const categories = request.input('categories');
+  
+      if (categories && categories.length > 3) {
+        return response.status(400).json({ message: 'Максимум 3 категорії можна додати до сету' });
+      }
+  
+      // Створення сету
       const set = await Set.create({
         ...data,
         userId: user.userId,
-        data: DateTime.local() // Setting the current date
-      })
-      return response.status(201).json({ message: 'Set created successfully', set })
+        data: DateTime.local()
+      });
+  
+      // Додавання категорій до таблиці `CategoryInSet`
+      if (categories) {
+        for (const categoryId of categories) {
+          await CategoryInSet.create({
+            questionSetId: set.QuestionSet_id,
+            categoryId
+          });
+        }
+      }
+  
+      return response.status(201).json({ message: 'Set created successfully', set });
     } catch (error) {
-      return response.status(500).json({ message: 'Failed to create set', error })
+      return response.status(500).json({ message: 'Failed to create set', error });
+    }
+  }
+  
+
+
+
+
+  /**
+ * @swagger
+ * /sets/{id}:
+ *   get:
+ *     summary: Get set by Id
+ *     tags: [Sets]
+ *     description: Отримує деталі про сет, включаючи його назву, рівень, категорії, автора, дату створення, питання, тип доступу та інформацію про вподобаність.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID сету, який потрібно отримати.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Успішно отримано деталі сету.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: Назва сету.
+ *                 level:
+ *                   type: object
+ *                   properties:
+ *                     levelId:
+ *                       type: integer
+ *                       description: ID рівня.
+ *                     name:
+ *                       type: string
+ *                       description: Назва рівня.
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID категорії.
+ *                       name:
+ *                         type: string
+ *                         description: Назва категорії.
+ *                 author:
+ *                   type: object
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                       description: Ім'я автора сету.
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: Дата створення сету.
+ *                 questions:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       questionId:
+ *                         type: integer
+ *                         description: ID питання.
+ *                       content:
+ *                         type: string
+ *                         description: Текст питання.
+ *                 access:
+ *                   type: string
+ *                   enum: [public, private]
+ *                   description: Тип доступу до сету.
+ *                 isFavourite:
+ *                   type: boolean
+ *                   description: true, якщо сет вподобаний поточним користувачем, інакше false.
+ *       404:
+ *         description: Сет не знайдено.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Set not found"
+ */
+
+  public async show({ params, auth, response }: HttpContextContract) {
+    try {
+      // Аутентифікація користувача
+      const user = await auth.authenticate();
+
+      // Отримання сету за його ID
+      const set = await Set.query()
+        .where('QuestionSet_id', params.id)
+        .preload('user') // Загрузка автора сету
+        .preload('level') // Загрузка рівня сету
+        .preload('questions') // Загрузка питань сету
+        .firstOrFail();
+
+      // Отримуємо категорії, які відносяться до цього сету
+      const categories = await CategoryInSet.query()
+        .where('questionSetId', set.QuestionSet_id)
+        .preload('category') // Загрузка категорії
+        .exec();
+
+      // Перевірка, чи вподобаний сет поточним користувачем
+      const isFavourite = await Favourite.query()
+        .where('questionListId', set.QuestionSet_id)
+        .andWhere('userId', user.userId)
+        .first();
+
+      // Формуємо відповідь
+      return response.status(200).json({
+        name: set.name,
+        level: {
+          levelId: set.levelId,
+          name: set.level?.name // Ім'я рівня
+        },
+        categories: categories.map(cat => ({
+          id: cat.categoryId,
+          name: cat.category?.name // Ім'я категорії
+        })),
+        author: {
+          username: set.user?.username // Ім'я автора
+        },
+        createdAt: set.createdAt,
+        questions: set.questions, // Масив питань
+        access: set.access ? 'public' : 'private', // Тип доступу
+        isFavourite: !!isFavourite // Чи вподобаний сет
+      });
+    } catch (error) {
+      return response.status(404).json({ message: 'Set not found' });
+    }
+  }
+
+
+
+
+
+  /**
+   * @swagger
+   * /api/sets/{setId}/categories/{categoryId}:
+   *   delete:
+   *     summary: Remove a category from a set
+   *     tags: [Categories, Sets]
+   *     parameters:
+   *       - in: path
+   *         name: setId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: The set ID
+   *       - in: path
+   *         name: categoryId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: The category ID
+   *     responses:
+   *       200:
+   *         description: Category removed from set successfully
+   *       500:
+   *         description: Failed to remove category from set
+   */
+  public async removeCategoryFromSet({ params, response }: HttpContextContract) {
+    try {
+      const categoryInSet = await CategoryInSet.query()
+        .where('questionSetId', params.setId)
+        .andWhere('categoryId', params.categoryId)
+        .firstOrFail();
+      
+      await categoryInSet.delete();
+      return response.status(200).json({ message: 'Category removed from set successfully' });
+    } catch (error) {
+      return response.status(500).json({ message: 'Failed to remove category from set', error });
     }
   }
 
@@ -103,6 +344,7 @@ export default class SetsController {
    * /api/sets/{id}:
    *   put:
    *     summary: Update a set
+   *     description: не обов'язково передавати всі поля
    *     tags: [Sets]
    *     security:
    *       - bearerAuth: []  

@@ -9,7 +9,7 @@ export default class extends BaseSchema {
 
       table.integer('type_id').unsigned().notNullable().references('id').inTable('types_notifications').onDelete('CASCADE')
       table.integer('answer_id').unsigned().references('id').inTable('help_answers').onDelete('SET NULL')
-      table.integer('question_id').unsigned().references('id').inTable('request_for_help').onDelete('SET NULL')
+      table.integer('question_id').unsigned().references('id').inTable('request_for_helps').onDelete('SET NULL')
       table.date('date').notNullable()
 
       table.timestamp('created_at', { useTz: true })

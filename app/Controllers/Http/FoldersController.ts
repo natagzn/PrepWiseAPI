@@ -4,8 +4,11 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Folder from 'App/Models/Folder'
 import { DateTime } from 'luxon'
 import SetInFolder from 'App/Models/SetInFolder'
+import Favourite from 'App/Models/Favorite'
 
-
+type CountResult = {
+  total: number;
+};
 export default class FoldersController {
   /**
    * @swagger
@@ -34,20 +37,33 @@ export default class FoldersController {
   // Створення нової папки
   public async create({ auth, request, response }: HttpContextContract) {
     try {
-      const user = await auth.authenticate()
-      const data = request.only(['name'])
+        const user = await auth.authenticate();
+        const data = request.only(['name']);
+        
+        // Отримуємо масив ID сетів з запиту
+        const sets = request.input('sets', []);
 
-      const folder = await Folder.create({
-        ...data,
-        userId: user.userId,
-        date: DateTime.local() // Встановлення поточної дати
-      })
+        // Створюємо папку
+        const folder = await Folder.create({
+            ...data,
+            userId: user.userId,
+            date: DateTime.local() // Встановлення поточної дати
+        });
 
-      return response.status(201).json({ message: 'Folder created successfully', folder })
+        // Додаємо сети до папки, якщо вони передані
+        for (const setId of sets) {
+            await SetInFolder.create({
+                setId,
+                folderId: folder.folderId,
+            });
+        }
+
+        return response.status(201).json({ message: 'Folder created successfully', folder });
     } catch (error) {
-      return response.status(500).json({ message: 'Failed to create folder', error })
+        return response.status(500).json({ message: 'Failed to create folder', error });
     }
-  }
+}
+
 
 
   /**
@@ -173,36 +189,92 @@ export default class FoldersController {
   }
 
 
-  /**
-   * @swagger
-   * /api/folders/{id}:
-   *   get:
-   *     summary: Get a folder by ID
-   *     tags: [Folders]
-   *     security:
-   *       - bearerAuth: []
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         description: The ID of the folder to retrieve
-   *         schema:
-   *           type: integer
-   *     responses:
-   *       200:
-   *         description: Folder retrieved successfully
-   *       404:
-   *         description: Folder not found
-   */
-  // Отримання папки за ID
-  public async show({ params, response }: HttpContextContract) {
-    try {
-      const folder = await Folder.findOrFail(params.id)
-      return response.status(200).json(folder)
-    } catch (error) {
-      return response.status(404).json({ message: 'Folder not found' })
-    }
+
+
+/**
+ * @swagger
+ * /folders/{id}:
+ *   get:
+ *     summary: Get Folder by id
+ *     tags: [Folders]
+ *     description: Повертає деталі папки за заданим ID, включаючи назву, кількість сетів та інформацію про вподобання користувача.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID папки, яку потрібно отримати.
+ *         schema:
+ *           type: integer
+ *     security:
+ *       - bearerAuth: [] 
+ *     responses:
+ *       200:
+ *         description: Успішно повернуто інформацію про папку.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: Унікальний ідентифікатор папки.
+ *                 name:
+ *                   type: string
+ *                   description: Назва папки.
+ *                 sets:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: Унікальний ідентифікатор сета.
+ *                       name:
+ *                         type: string
+ *                         description: Назва сета.
+ *                 isFavourite:
+ *                   type: boolean
+ *                   description: true, якщо папка вподобана користувачем, інакше false.
+ *       404:
+ *         description: Папка не знайдена.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 'Folder not found'
+ */
+
+public async show({ params, auth, response }: HttpContextContract) {
+  try {
+      const user = await auth.authenticate(); // Аутентифікація користувача
+      const folder = await Folder.findOrFail(params.id); // Знаходимо папку за ID
+
+      // Отримуємо всі сети, які відносяться до вказаної папки
+      const sets = await SetInFolder.query()
+          .where('folderId', folder.folderId);
+
+      // Перевірка, чи вподобана папка поточним користувачем
+      const isFavourite = await Favourite.query()
+          .where('folderId', folder.folderId)
+          .andWhere('userId', user.userId)
+          .first();
+
+      return response.status(200).json({
+          id: folder.folderId,
+          name: folder.name,
+          sets: sets, // Масив із сетами у папці та інформацією про них
+          isFavourite: !!isFavourite // true, якщо вподобана, інакше false
+      });
+  } catch (error) {
+      return response.status(404).json({ message: 'Folder not found' });
   }
+}
+
+
+
 
 
   /**
