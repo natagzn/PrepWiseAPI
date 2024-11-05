@@ -6,9 +6,7 @@ import { DateTime } from 'luxon'
 import SetInFolder from 'App/Models/SetInFolder'
 import Favourite from 'App/Models/Favorite'
 
-type CountResult = {
-  total: number;
-};
+
 export default class FoldersController {
   /**
    * @swagger
