@@ -7,10 +7,10 @@ import Resource from 'App/Models/Resource'
 export default class FavouritesController {
   /**
    * @swagger
-   * /api/favorites/sets:
+   * /api/favourites/sets:
    *   post:
    *     summary: Add a set to favourites
-   *     tags: [Favorites]
+   *     tags: [Favourites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -48,10 +48,10 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /api/favorites/sets:
+   * /api/favourites/sets:
    *   delete:
    *     summary: Remove a set from favourites
-   *     tags: [Favorites]
+   *     tags: [Favourites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -97,10 +97,10 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /api/favorites/folders:
+   * /api/favourites/folders:
    *   post:
    *     summary: Add a folder to favourites
-   *     tags: [Favorites]
+   *     tags: [Favourites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -138,10 +138,10 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /api/favorites/folders:
+   * /api/favourites/folders:
    *   delete:
    *     summary: Remove a folder from favourites
-   *     tags: [Favorites]
+   *     tags: [Favourites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -189,10 +189,10 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /api/favorites/resources:
+   * /api/favourites/resources:
    *   post:
    *     summary: Add a resource to favourites
-   *     tags: [Favorites]
+   *     tags: [Favourites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -230,10 +230,10 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /api/favorites/resources:
+   * /api/favourites/resources:
    *   delete:
    *     summary: Remove a resource from favourites
-   *     tags: [Favorites]
+   *     tags: [Favourites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -282,10 +282,10 @@ export default class FavouritesController {
 
   /**
    * @swagger
-   * /api/favorites:
+   * /api/favourites:
    *   get:
    *     summary: Get user favourites
-   *     tags: [Favorites]
+   *     tags: [Favourites]
    *     security:
    *       - bearerAuth: []
    *     responses:

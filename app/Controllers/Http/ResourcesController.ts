@@ -1,5 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Resource from 'App/Models/Resource'
+import ResourceLike from 'App/Models/ResourceLike'
+
 import { DateTime } from 'luxon'
 
 export default class ResourcesController {
@@ -94,20 +96,66 @@ export default class ResourcesController {
    *         description: Resource not found
    */
   // Отримання ресурсу за ID
-  public async show({ params, response }: HttpContextContract) {
+  public async show({ params, auth, response }: HttpContextContract) {
     try {
+      // 1. Отримуємо ID поточного користувача
+      const userId = auth.user?.userId
+      if (!userId) {
+        return response.status(401).json({ message: 'User not authenticated' })
+      }
+
+      // 2. Отримуємо ресурс із завантаженням автора, категорії, рівня та лайків
       const resource = await Resource.query()
         .where('resourceId', params.id)
-        .preload('user')
-        .preload('level')
-        .preload('likes')
+        .preload('user') // Автор ресурсу
+        .preload('level') // Рівень ресурсу
+        .preload('category') // Категорія ресурсу
+        .preload('likes', (likesQuery) => {
+          // Додаємо фільтрацію за лайками/дизлайками поточного ресурсу
+          likesQuery.where('resourceId', params.id)
+        })
         .firstOrFail()
 
-      return response.status(200).json(resource)
+      // 3. Отримуємо інформацію про реакцію користувача на цей ресурс (лайк/дизлайк)
+      const userReaction = await ResourceLike.query()
+        .where('resourceId', params.id)
+        .andWhere('userId', userId)
+        .first()
+
+      // 4. Підготовка даних для відповіді
+      const responseData = {
+        author: {
+          id: resource.user.userId,
+          name: resource.user.name,
+          surname: resource.user.surname,
+        },
+        category: {
+          id: resource.category.categoryId,
+          name: resource.category.name,
+        },
+        level: {
+          id: resource.level.levelId,
+          name: resource.level.name,
+        },
+        title: resource.title,
+        description: resource.description,
+        created_at: resource.createdAt,
+        likes: resource.likes.filter((like) => like.like).length,
+        dislikes: resource.likes.filter((like) => !like.like).length,
+        userReaction: userReaction ? (userReaction.like ? 'liked' : 'disliked') : null,
+        isAuthor: resource.userId === userId,
+      }
+
+      return response.status(200).json(responseData)
     } catch (error) {
       return response.status(404).json({ message: 'Resource not found', error })
     }
   }
+
+
+
+
+  
 
 
 
