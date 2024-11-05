@@ -175,4 +175,10 @@ Route.group(() => {
 }).prefix("/api");
 
 
+Route.group(() => {
+  Route.group(() => {
+    Route.get('/date-of-visits', 'DateOfVisitsController.index')
+  }).middleware("auth:api")
+}).prefix("/api");
+
 
