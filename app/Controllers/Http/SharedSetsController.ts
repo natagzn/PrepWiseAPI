@@ -48,7 +48,7 @@ export default class SharedSetsController {
         edit: isEdit,
       })
 
-      const set = await Database
+      await Database
       .from('sets')
       .where('question_set_id', setId)
       .update({ shared: true });
