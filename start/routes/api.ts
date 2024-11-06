@@ -22,7 +22,7 @@ Route.group(() => {
   Route.get('/levels/:id', 'LevelsController.show')
   Route.put('/levels/:id', 'LevelsController.update')
   Route.delete('/levels/:id', 'LevelsController.delete')
-  Route.post('/api/levels', 'LevelsController.create')
+  Route.post('/levels', 'LevelsController.create')
 
 }).middleware("auth:api")
 }).prefix("/api");
@@ -48,7 +48,7 @@ Route.group(() => {
     Route.get('/sets/:id', 'SetsController.show')
     Route.put('/sets/:id', 'SetsController.update')
     Route.delete('/sets/:id', 'SetsController.delete')  
-    Route.get('/sets/questions', 'SetsController.getUserSetsWithQuestions')  
+    Route.get('/setsAll', 'SetsController.getUserSetsWithQuestions')  
 
   }).middleware("auth:api")
 }).prefix("/api");

@@ -128,7 +128,7 @@ export default class SetsController {
 
   /**
  * @swagger
- * /sets/{id}:
+ * /api/sets/{id}:
  *   get:
  *     summary: Get set by Id
  *     tags: [Sets]
@@ -307,7 +307,7 @@ export default class SetsController {
 
   /**
    * @swagger
-   * /api/sets/questions:
+   * /api/setAll:
    *   get:
    *     summary: Retrieve all user sets with questions
    *     tags: [Sets]

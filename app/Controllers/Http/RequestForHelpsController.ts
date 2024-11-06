@@ -1,5 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import RequestForHelp from 'App/Models/RequestForHelp'
+import People from 'App/Models/People'
+
 import { DateTime } from 'luxon'
 
 
@@ -64,21 +66,44 @@ export default class RequestForHelpController {
    *                   example: Error details
    */
   // Створення нового запиту на допомогу
-  public async create({ request, response }: HttpContextContract) {
+  public async create({ auth, request, response }: HttpContextContract) {
     try {
+      const userId = auth.user?.userId
       const { friendId, questionId } = request.all()
-
+  
       // Перевірка наявності friendId та questionId
-      if (!friendId || !questionId) {
+      if (!friendId || !questionId || !userId) {
         return response.badRequest({ message: 'friendId and questionId are required' })
       }
-
+  
+      // Перевірка, чи існує взаємна підписка
+      const mutualSubscriptionQuery = People.query()
+        .where('userId', userId)
+        .where('friendUserId', friendId)
+        .whereIn('friendUserId', (subquery) => {
+          subquery
+            .from('people')
+            .where('userId', friendId)
+            .where('friendUserId', userId)
+            .select('friendUserId')
+        })
+  
+      console.log('Mutual Subscription Query:', mutualSubscriptionQuery.toQuery()) // Вивід SQL-запиту для взаємної підписки
+  
+      const mutualSubscription = await mutualSubscriptionQuery.first()
+      console.log('Mutual Subscription Result:', mutualSubscription) // Вивід результату запиту
+  
+      if (!mutualSubscription) {
+        return response.forbidden({ message: 'Mutual subscription is required to send a request for help' })
+      }
+  
+      // Створення запису в таблиці RequestForHelp
       const requestForHelp = await RequestForHelp.create({
         friendId,
         questionId,
-        date: DateTime.local(), 
+        date: DateTime.local(),
       })
-
+  
       return response.created({ message: 'Request for help created successfully', requestForHelp })
     } catch (error) {
       return response.internalServerError({ message: 'Failed to create request for help', error: error.message })
