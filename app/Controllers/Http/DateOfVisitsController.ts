@@ -4,7 +4,7 @@ import DateOfVisit from 'App/Models/DateOfVisit'
 export default class DateOfVisitsController {
   /**
    * @swagger
-   * /date-of-visits:
+   * /api/date-of-visits:
    *   get:
    *     summary: Отримати всі записи про відвідини для поточного користувача
    *     tags: [DateOfVisits]

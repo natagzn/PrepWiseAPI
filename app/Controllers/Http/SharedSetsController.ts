@@ -1,5 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import SharedSet from 'App/Models/SharedSet'
+import Database from '@ioc:Adonis/Lucid/Database';
+import SetModel from 'App/Models/Set'
+
 
 export default class SharedSetsController {
   /**
@@ -44,6 +47,11 @@ export default class SharedSetsController {
         userId,
         edit: isEdit,
       })
+
+      const set = await Database
+      .from('sets')
+      .where('question_set_id', setId)
+      .update({ shared: true });
 
       return response.created({ message: 'SharedSet created successfully', sharedSet })
     } catch (error) {
@@ -203,20 +211,30 @@ export default class SharedSetsController {
    */
   // Видалення запису
   public async destroy({ params, response }: HttpContextContract) {
-    try {
-      const sharedSet = await SharedSet.find(params.id)
+    const { id } = params
 
-      if (!sharedSet) {
-        return response.notFound({ message: 'SharedSet not found' })
-      }
-
-      await sharedSet.delete()
-      return response.status(200).json({ message: 'SharedSet deleted successfully' })
-      //return response.noContent({ message: 'SharedSet deleted successfully' })
-    } catch (error) {
-      return response.internalServerError({ message: 'Failed to delete SharedSet', error: error.message })
+    const sharedSet = await SharedSet.find(id)
+    if (!sharedSet) {
+      return response.status(404).json({ message: 'Shared set not found' })
     }
+
+    const setId = sharedSet.setId
+    await sharedSet.delete()
+
+    // Перевірка, чи є ще записи в SharedSets для цього `setId`
+    const remainingSharedSets = await SharedSet.query().where('set_id', setId)
+    if (remainingSharedSets.length === 0) {
+      // Якщо це останній запис, оновлюємо поле `shared` в Sets
+      const set = await SetModel.find(setId)
+      if (set && set.shared) {
+        set.shared = false
+        await set.save()
+      }
+    }
+
+    return response.json({ message: 'Shared set deleted successfully' })
   }
+  
 
 
 

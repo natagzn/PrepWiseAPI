@@ -93,9 +93,9 @@ export default class RequestForHelpController {
       const mutualSubscription = await mutualSubscriptionQuery.first()
       console.log('Mutual Subscription Result:', mutualSubscription) // Вивід результату запиту
   
-      if (!mutualSubscription) {
+      /*if (!mutualSubscription) {
         return response.forbidden({ message: 'Mutual subscription is required to send a request for help' })
-      }
+      }*/
   
       // Створення запису в таблиці RequestForHelp
       const requestForHelp = await RequestForHelp.create({
