@@ -8,10 +8,10 @@ import User from 'App/Models/User'
 export default class PeopleController {
   /**
    * @swagger
-   * /api/friends:
+   * /api/people:
    *   post:
    *     summary: Add a friend
-   *     tags: [Friends]
+   *     tags: [People]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -74,10 +74,10 @@ export default class PeopleController {
 
   /**
    * @swagger
-   * /api/friends/added-ids:
+   * /api/following:
    *   get:
    *     summary: Get added user IDs
-   *     tags: [Friends]
+   *     tags: [People]
    *     security:
    *       - bearerAuth: []
    *     responses:
@@ -116,10 +116,10 @@ export default class PeopleController {
 
   /**
    * @swagger
-   * /api/friends/mutual:
+   * /api/friends:
    *   get:
    *     summary: Get mutual friends
-   *     tags: [Friends]
+   *     tags: [People]
    *     security:
    *       - bearerAuth: []
    *     responses:
@@ -165,10 +165,10 @@ export default class PeopleController {
 
   /**
    * @swagger
-   * /api/friends/subscribers:
+   * /api/subscribers:
    *   get:
    *     summary: Get subscribers
-   *     tags: [Friends]
+   *     tags: [People]
    *     security:
    *       - bearerAuth: []
    *     responses:
@@ -209,10 +209,10 @@ export default class PeopleController {
 
 /**
    * @swagger
-   * /api/friends/{id}:
+   * /api/people/delete/{id}:
    *   delete:
    *     summary: Remove a friend subscription
-   *     tags: [Friends]
+   *     tags: [People]
    *     security:
    *       - bearerAuth: []
    *     parameters:

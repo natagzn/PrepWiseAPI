@@ -191,7 +191,7 @@ export default class FoldersController {
 
 /**
  * @swagger
- * /folders/{id}:
+ * /api/folders/{id}:
  *   get:
  *     summary: Get Folder by id
  *     tags: [Folders]
@@ -264,7 +264,8 @@ public async show({ params, auth, response }: HttpContextContract) {
           id: folder.folderId,
           name: folder.name,
           sets: sets, // Масив із сетами у папці та інформацією про них
-          isFavourite: !!isFavourite // true, якщо вподобана, інакше false
+          isFavourite: !!isFavourite, // true, якщо вподобана, інакше false
+          date: folder.date
       });
   } catch (error) {
       return response.status(404).json({ message: 'Folder not found' });

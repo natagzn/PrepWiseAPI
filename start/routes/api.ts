@@ -58,8 +58,8 @@ Route.group(() => {
     Route.get('/friends', 'PeopleController.getFriends')
     Route.get('/following', 'PeopleController.getAddedUserIds')
     Route.get('/subscribers', 'PeopleController.getSubscribers')
-    Route.post('/addFriend', 'PeopleController.addFriend')
-    Route.delete('/friends/delete/:id', 'PeopleController.deleteFriend')
+    Route.post('/people', 'PeopleController.addFriend')
+    Route.delete('/people/delete/:id', 'PeopleController.deleteFriend')
 
   }).middleware("auth:api")
 }).prefix("/api");

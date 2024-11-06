@@ -66,9 +66,11 @@ export default class ResourcesController {
    *         description: Failed to retrieve resources
    */
   // Отримання всіх ресурсів
-  public async index({ response }: HttpContextContract) {
+  public async index({auth, response }: HttpContextContract) {
     try {
-      const resources = await Resource.query().preload('user').preload('level').preload('likes')
+      const user = await auth.authenticate()
+
+      const resources = await Resource.query().where('userId', user.userId)
       return response.status(200).json(resources)
     } catch (error) {
       return response.status(500).json({ message: 'Failed to retrieve resources', error })

@@ -449,10 +449,14 @@ public async delete({ auth, params, response }: HttpContextContract) {
   }
 
   
+
+  
   // Get all sets
-  public async index({ response }: HttpContextContract) {
+  public async index({ auth, response }: HttpContextContract) {
     try {
-      const sets = await Set.all()
+      const user = await auth.authenticate()
+      const sets = await Set.query().where('userId', user.userId)
+
       return response.status(200).json(sets)
     } catch (error) {
       return response.status(500).json({ message: 'Failed to retrieve sets', error })

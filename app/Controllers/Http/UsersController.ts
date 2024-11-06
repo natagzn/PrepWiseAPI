@@ -209,8 +209,9 @@ export default class UsersController {
           rules.unique({ table: 'users', column: 'email', whereNot: { user_id: user.userId } }),
         ]),
         location: schema.string.optional({ trim: true }),
-        name: schema.string.optional({ trim: true }),
-        surname: schema.string.optional({ trim: true }), //що саме це означає????
+        username: schema.string.optional({}, [
+          rules.unique({ table: 'users', column: 'username', whereNot: { user_id: user.userId } }),
+        ])
       })
 
       // Валідація запиту
@@ -228,8 +229,8 @@ export default class UsersController {
       if (payload.bio) user.bio = payload.bio
       if (payload.email) user.email = payload.email
       if (payload.location) user.location = payload.location
-      if (payload.name) user.name = payload.name
-      if (payload.surname) user.surname = payload.surname
+      if (payload.username) user.username = payload.username
+
 
 
       // Зберегти зміни
