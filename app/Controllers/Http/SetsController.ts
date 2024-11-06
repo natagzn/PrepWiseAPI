@@ -307,7 +307,7 @@ export default class SetsController {
 
   /**
    * @swagger
-   * /api/setAll:
+   * /api/setsAll:
    *   get:
    *     summary: Retrieve all user sets with questions
    *     tags: [Sets]
