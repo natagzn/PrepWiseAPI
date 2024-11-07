@@ -3,8 +3,8 @@ import SharedSet from 'App/Models/SharedSet'
 import Database from '@ioc:Adonis/Lucid/Database';
 import SetModel from 'App/Models/Set'
 
-import User from 'App/Models/User'
-import CategoryInSet from 'App/Models/CategoryInSet'
+//import User from 'App/Models/User'
+//import CategoryInSet from 'App/Models/CategoryInSet'
 import Category from 'App/Models/Category'
 
 
