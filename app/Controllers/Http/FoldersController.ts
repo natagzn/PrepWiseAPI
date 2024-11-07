@@ -414,4 +414,120 @@ public async show({ params, auth, response }: HttpContextContract) {
       return response.status(500).json({ message: 'Failed to delete folder', error })
     }
   }
+
+
+
+
+
+
+
+/**
+ * @swagger
+ * /api/folders-set:
+ *   delete:
+ *     summary: Видалення сета з папки
+ *     description: Даний метод дозволяє видалити заданий сет з вказаної папки за допомогою їх унікальних ідентифікаторів.
+ *     parameters:
+ *       - in: query
+ *         name: folderId
+ *         required: true
+ *         description: Ідентифікатор папки, з якої потрібно видалити сет.
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: setId
+ *         required: true
+ *         description: Ідентифікатор сета, який необхідно видалити з папки.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Сет успішно видалено з папки.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Set removed from folder successfully
+ *       400:
+ *         description: Відсутні необхідні параметри (folderId або setId).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Folder ID and Set ID are required
+ *       404:
+ *         description: Сет не знайдено в зазначеній папці.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Set not found in the specified folder
+ *       500:
+ *         description: Помилка при видаленні сета з папки.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error removing set from folder
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error details
+ */
+
+  public async removeSetFromFolder({ request, response }: HttpContextContract) {
+    try {
+      // Отримуємо `folder_id` та `set_id` з параметрів запиту
+      const { folderId } = request.only(['folderId']) 
+      const { setId } = request.only(['setId']) 
+
+
+      console.log(`Received folderId: ${folderId}, questionSetId: ${setId}`);
+
+      // Перевіряємо, чи отримали коректні значення
+      if (!folderId || !setId) {
+        return response.status(400).json({
+          message: 'Folder ID and Set ID are required',
+        });
+      }
+
+      // Знаходимо запис в таблиці SetInFolder
+      const setInFolder = await SetInFolder.query()
+        .where('folder_id', folderId)
+        .andWhere('set_id', setId)
+        .first();
+
+      if (!setInFolder) {
+        console.log('Set not found in the specified folder');
+        return response.status(404).json({
+          message: 'Set not found in the specified folder',
+        });
+      }
+
+      // Видаляємо запис
+      await setInFolder.delete();
+      console.log('Set removed from folder successfully');
+
+      return response.status(200).json({
+        message: 'Set removed from folder successfully',
+      });
+    } catch (error) {
+      console.error('Error details:', error); // Додатковий лог помилки
+      return response.status(500).json({
+        message: 'Error removing set from folder',
+        error: error.message || error,
+      });
+    }
+  }
 }
