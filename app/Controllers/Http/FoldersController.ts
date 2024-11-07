@@ -8,31 +8,90 @@ import Favourite from 'App/Models/Favorite'
 
 
 export default class FoldersController {
-  /**
-   * @swagger
-   * /api/folders:
-   *   post:
-   *     summary: Create a new folder
-   *     tags: [Folders]
-   *     security:
-   *       - bearerAuth: []
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 example: "My New Folder"
-   *     responses:
-   *       201:
-   *         description: Folder created successfully
-   *       500:
-   *         description: Failed to create folder
-   */
-  // Створення нової папки
+
+/**
+ * @swagger
+ * /folders:
+ *   post:
+ *     summary: Створення нової папки
+ *     description: Створює нову папку для поточного користувача з можливістю додавання в неї сетів.
+ *     tags:
+ *       - Folders
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Назва нової папки.
+ *                 example: "Моя нова папка"
+ *               sets:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 description: Масив ID сетів, які потрібно додати до папки.
+ *                 example: [1, 2, 3]
+ *     responses:
+ *       201:
+ *         description: Папка успішно створена
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Folder created successfully"
+ *                 folder:
+ *                   type: object
+ *                   properties:
+ *                     folderId:
+ *                       type: integer
+ *                       description: Унікальний ідентифікатор папки
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       description: Назва папки
+ *                       example: "Моя нова папка"
+ *                     userId:
+ *                       type: integer
+ *                       description: Ідентифікатор користувача, який створив папку
+ *                       example: 5
+ *                     date:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Дата створення папки
+ *                       example: "2024-11-05T12:34:56.000Z"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Дата та час створення папки в базі даних
+ *                       example: "2024-11-05T12:34:56.000Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Дата та час останнього оновлення папки в базі даних
+ *                       example: "2024-11-05T12:34:56.000Z"
+ *       500:
+ *         description: Помилка при створенні папки
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to create folder"
+ *                 error:
+ *                   type: object
+ *                   description: Деталі помилки
+ */
+
   public async create({ auth, request, response }: HttpContextContract) {
     try {
         const user = await auth.authenticate();

@@ -3,6 +3,10 @@ import SharedSet from 'App/Models/SharedSet'
 import Database from '@ioc:Adonis/Lucid/Database';
 import SetModel from 'App/Models/Set'
 
+import User from 'App/Models/User'
+import CategoryInSet from 'App/Models/CategoryInSet'
+import Category from 'App/Models/Category'
+
 
 export default class SharedSetsController {
   /**
@@ -281,4 +285,100 @@ export default class SharedSetsController {
       return response.internalServerError({ message: 'Failed to retrieve author ID', error: error.message })
     }
   }
+
+
+  /*public async getSharedSets({ auth, response }: HttpContextContract) {
+    try {
+        const user = await auth.authenticate(); // Аутентифікація користувача
+
+        // Отримуємо всі SharedSet записи для поточного користувача
+        const sharedSets = await SharedSet.query()
+            .where('user_id', user.userId)
+            .preload('set', (setQuery) => {
+                setQuery
+                    .preload('user') // Завантаження автора сета
+                    .preload('questions') // Завантаження питань в сеті
+                    .preload('level') // Завантаження рівня сета
+            })
+
+        // Обробка кожного сета для додаткового завантаження категорій
+        const setsWithCategories = await Promise.all(
+            sharedSets.map(async (sharedSet) => {
+                const set = sharedSet.set;
+
+                // Знаходимо категорії для кожного сета
+                const categories = await Category.query()
+                    .whereIn('category_id', (query) => {
+                        query.from('category_in_sets')
+                            .where('question_set_id', set.QuestionSet_id)
+                            .select('category_id')
+                    })
+                    .preload('resources') // Завантаження ресурсів кожної категорії
+
+                return {
+                    ...set.serialize(),
+                    author: set.user, // Автор сета
+                    categories: categories.map(category => category.serialize()) // Категорії сета
+                };
+            })
+        );
+
+        return response.status(200).json({
+            sharedSets: setsWithCategories,
+        });
+    } catch (error) {
+        return response.status(500).json({ message: 'Error retrieving shared sets', error });
+    }
+}*/
+
+
+
+
+
+
+public async getSharedSets({ auth, response }: HttpContextContract) {
+  try {
+      const user = await auth.authenticate(); // Аутентифікація користувача
+
+      // Отримуємо всі SharedSet записи для поточного користувача
+      const sharedSets = await SharedSet.query()
+          .where('user_id', user.userId) // Користувач, який отримав доступ
+          .preload('set', (setQuery) => {
+              setQuery
+                  .preload('user') // Завантаження автора сета
+                  .preload('questions') // Завантаження питань у сеті
+                  .preload('level') // Завантаження рівня сета
+          })
+          .preload('user') // Завантаження користувача, якому поширили сет
+
+      // Обробка кожного сета для додаткового завантаження категорій
+      const setsWithCategories = await Promise.all(
+          sharedSets.map(async (sharedSet) => {
+              const set = sharedSet.set;
+
+              // Знаходимо категорії для кожного сета
+              const categories = await Category.query()
+                  .whereIn('category_id', (query) => {
+                      query.from('category_in_sets')
+                          .where('question_set_id', set.QuestionSet_id)
+                          .select('category_id')
+                  })
+
+              return {
+                  ...set.serialize(),
+                  author: set.user, // Автор сета
+                  sharedWithUser: sharedSet.user, // Користувач, якому поширили сет
+                  editPermission: sharedSet.edit, // Права редагування
+                  categories: categories.map(category => category.serialize()) // Категорії сета
+              };
+          })
+      );
+
+      return response.status(200).json({
+          sharedSets: setsWithCategories,
+      });
+  } catch (error) {
+      return response.status(500).json({ message: 'Error retrieving shared sets', error });
+  }
+}
 }
