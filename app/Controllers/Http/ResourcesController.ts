@@ -128,8 +128,7 @@ export default class ResourcesController {
       const responseData = {
         author: {
           id: resource.user.userId,
-          name: resource.user.name,
-          surname: resource.user.surname,
+          username: resource.user.username,
         },
         category: {
           id: resource.category.categoryId,
