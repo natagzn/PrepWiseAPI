@@ -127,7 +127,7 @@ export default class UsersController {
   /**
    * @swagger
    * /api/update:
-   *   put:
+   *   post:
    *     summary: Update user profile
    *     tags: [Users]
    *     security:

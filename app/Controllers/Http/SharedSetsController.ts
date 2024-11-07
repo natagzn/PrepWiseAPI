@@ -2,9 +2,6 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import SharedSet from 'App/Models/SharedSet'
 import Database from '@ioc:Adonis/Lucid/Database';
 import SetModel from 'App/Models/Set'
-
-//import User from 'App/Models/User'
-//import CategoryInSet from 'App/Models/CategoryInSet'
 import Category from 'App/Models/Category'
 
 
@@ -287,54 +284,99 @@ export default class SharedSetsController {
   }
 
 
-  /*public async getSharedSets({ auth, response }: HttpContextContract) {
-    try {
-        const user = await auth.authenticate(); // Аутентифікація користувача
-
-        // Отримуємо всі SharedSet записи для поточного користувача
-        const sharedSets = await SharedSet.query()
-            .where('user_id', user.userId)
-            .preload('set', (setQuery) => {
-                setQuery
-                    .preload('user') // Завантаження автора сета
-                    .preload('questions') // Завантаження питань в сеті
-                    .preload('level') // Завантаження рівня сета
-            })
-
-        // Обробка кожного сета для додаткового завантаження категорій
-        const setsWithCategories = await Promise.all(
-            sharedSets.map(async (sharedSet) => {
-                const set = sharedSet.set;
-
-                // Знаходимо категорії для кожного сета
-                const categories = await Category.query()
-                    .whereIn('category_id', (query) => {
-                        query.from('category_in_sets')
-                            .where('question_set_id', set.QuestionSet_id)
-                            .select('category_id')
-                    })
-                    .preload('resources') // Завантаження ресурсів кожної категорії
-
-                return {
-                    ...set.serialize(),
-                    author: set.user, // Автор сета
-                    categories: categories.map(category => category.serialize()) // Категорії сета
-                };
-            })
-        );
-
-        return response.status(200).json({
-            sharedSets: setsWithCategories,
-        });
-    } catch (error) {
-        return response.status(500).json({ message: 'Error retrieving shared sets', error });
-    }
-}*/
 
 
 
 
-
+/**
+ * @swagger
+ * /api/shared-sets-all:
+ *   get:
+ *     summary: Отримання інформації про сети, поширені поточним користувачем
+ *     description: Повертає детальну інформацію про сети, якими поділився поточний користувач, включаючи автора сету, користувача, якому поширили сет, категорії та права редагування.
+ *     tags:
+ *       - SharedSets
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Успішне отримання інформації про поширені сети.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 sharedSets:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       QuestionSet_id:
+ *                         type: integer
+ *                         description: Унікальний ідентифікатор сету
+ *                       name:
+ *                         type: string
+ *                         description: Назва сету
+ *                       shared:
+ *                         type: boolean
+ *                         description: Статус поширення сету
+ *                       access:
+ *                         type: boolean
+ *                         description: Доступність сету
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Дата створення сету
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Дата оновлення сету
+ *                       author:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             description: Ідентифікатор автора сету
+ *                           username:
+ *                             type: string
+ *                             description: Ім'я автора сету
+ *                       sharedWithUser:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             description: Ідентифікатор користувача, якому поширено сет
+ *                           username:
+ *                             type: string
+ *                             description: Ім'я користувача, якому поширено сет
+ *                       editPermission:
+ *                         type: boolean
+ *                         description: Чи має користувач, якому поширили сет, право редагувати
+ *                       categories:
+ *                         type: array
+ *                         description: Список категорій, пов'язаних із сетом
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             categoryId:
+ *                               type: integer
+ *                               description: Ідентифікатор категорії
+ *                             name:
+ *                               type: string
+ *                               description: Назва категорії
+ *                             createdAt:
+ *                               type: string
+ *                               format: date-time
+ *                               description: Дата створення категорії
+ *                             updatedAt:
+ *                               type: string
+ *                               format: date-time
+ *                               description: Дата оновлення категорії
+ *       401:
+ *         description: Невдала аутентифікація користувача.
+ *       500:
+ *         description: Помилка сервера при отриманні поширених сетів.
+ */
 
 public async getSharedSets({ auth, response }: HttpContextContract) {
   try {
@@ -364,12 +406,35 @@ public async getSharedSets({ auth, response }: HttpContextContract) {
                           .select('category_id')
                   })
 
+                  const isFavourite = await Database
+                  .from('favourites')
+                  .where('user_id', user.userId)
+                  .andWhere('question_list_id', set.QuestionSet_id)
+                  .first() ? true : false;
+
+
+
+
               return {
-                  ...set.serialize(),
-                  author: set.user, // Автор сета
-                  sharedWithUser: sharedSet.user, // Користувач, якому поширили сет
-                  editPermission: sharedSet.edit, // Права редагування
-                  categories: categories.map(category => category.serialize()) // Категорії сета
+                setInfo: {
+                  id: set.QuestionSet_id,
+                  name: set.name,
+                  shared: set.shared,
+                  access: set.access,
+                  createdAt: set.createdAt,
+                  updatedAt: set.updatedAt,
+                },
+                author: {
+                  id: set.user.userId,
+                  username: set.user.username,
+                }, // Автор сета
+                sharedWithUser: {
+                  id: sharedSet.user.userId,
+                  username: sharedSet.user.username,
+                }, // Користувач, якому поширили сет
+                editPermission: sharedSet.edit, // Права редагування
+                isFavourite: isFavourite, 
+                categories: categories.map(category => category.serialize()) // Категорії сета
               };
           })
       );
@@ -379,6 +444,181 @@ public async getSharedSets({ auth, response }: HttpContextContract) {
       });
   } catch (error) {
       return response.status(500).json({ message: 'Error retrieving shared sets', error });
+  }
+}
+
+
+
+
+
+/**
+ * @swagger
+ * /api/shared-sets-by-user:
+ *   get:
+ *     summary: Retrieve sets shared by the current user
+ *     description: This endpoint returns detailed information about sets shared by the authenticated user, including set details, author information, and details of the user with whom the set was shared.
+ *     tags:
+ *       - SharedSets
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of sets shared by the current user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 setsSharedByUser:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       setInfo:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             description: Unique ID of the set
+ *                           name:
+ *                             type: string
+ *                             description: Name of the set
+ *                           shared:
+ *                             type: boolean
+ *                             description: Whether the set is shared
+ *                           access:
+ *                             type: boolean
+ *                             description: Access level of the set
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
+ *                             description: Creation date of the set
+ *                           updatedAt:
+ *                             type: string
+ *                             format: date-time
+ *                             description: Last update date of the set
+ *                       author:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             description: ID of the set's author
+ *                           username:
+ *                             type: string
+ *                             description: Username of the set's author
+ *                       sharedWithUser:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             description: ID of the user with whom the set was shared
+ *                           username:
+ *                             type: string
+ *                             description: Username of the user with whom the set was shared
+ *                       editPermission:
+ *                         type: boolean
+ *                         description: Whether the shared user has edit permissions
+ *                       categories:
+ *                         type: array
+ *                         description: Categories associated with the set
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             categoryId:
+ *                               type: integer
+ *                               description: ID of the category
+ *                             name:
+ *                               type: string
+ *                               description: Name of the category
+ *                             createdAt:
+ *                               type: string
+ *                               format: date-time
+ *                               description: Creation date of the category
+ *                             updatedAt:
+ *                               type: string
+ *                               format: date-time
+ *                               description: Last update date of the category
+ *       401:
+ *         description: Unauthorized - User not authenticated
+ *       500:
+ *         description: Internal server error - Unable to retrieve shared sets
+ */
+
+
+public async getSetsSharedByCurrentUser({ auth, response }: HttpContextContract) {
+  try {
+    const currentUser = await auth.authenticate(); // Аутентифікація поточного користувача
+
+    // Отримуємо всі записи SharedSet, де поточний користувач є автором сету
+    const sharedSets = await SharedSet.query()
+      .preload('set', (setQuery) => {
+        setQuery
+          .where('user_id', currentUser.userId) // Фільтрація по поточному автору
+          .preload('user') // Автор сета
+          .preload('questions') // Питання в сеті
+          .preload('level') // Рівень сета
+      })
+      .preload('user') // Завантаження користувача, якому поширили сет
+
+    // Обробка кожного сета для завантаження додаткової інформації про категорії
+    const setsWithFullDetails = await Promise.all(
+      sharedSets.map(async (sharedSet) => {
+        const set = sharedSet.set;
+
+        // Перевірка, чи завантажений сет, щоб уникнути помилок
+        if (!set) {
+          console.error(`Set with ID ${sharedSet.setId} not found.`);
+          return null;
+        }
+
+        // Отримуємо категорії для кожного сета
+        const categories = await Category.query()
+          .whereIn('category_id', (query) => {
+            query.from('category_in_sets')
+              .where('question_set_id', set.QuestionSet_id)
+              .select('category_id')
+          })
+          //.preload('resources') // Завантаження ресурсів кожної категорії
+
+          const isFavourite = await Database
+                  .from('favourites')
+                  .where('user_id', currentUser.userId)
+                  .andWhere('question_list_id', set.QuestionSet_id)
+                  .first() ? true : false;
+
+          return {
+            setInfo: {
+              id: set.QuestionSet_id,
+              name: set.name,
+              shared: set.shared,
+              access: set.access,
+              createdAt: set.createdAt,
+              updatedAt: set.updatedAt,
+            },
+            author: {
+              id: set.user.userId,
+              username: set.user.username,
+            }, // Автор сета
+            sharedWithUser: {
+              id: sharedSet.user.userId,
+              username: sharedSet.user.username,
+            }, // Користувач, якому поширили сет
+            editPermission: sharedSet.edit, // Права редагування
+            isFavourite: isFavourite, 
+            categories: categories.map(category => category.serialize()) // Категорії сета
+          };
+      })
+    );
+
+    // Видаляємо можливі null значення, що можуть виникнути при пропущених даних
+    const filteredSets = setsWithFullDetails.filter(set => set !== null);
+
+    return response.status(200).json({
+      setsSharedByUser: filteredSets,
+    });
+  } catch (error) {
+    console.error('Error retrieving shared sets:', error);
+    return response.status(500).json({ message: 'Error retrieving shared sets', error: error.message || error });
   }
 }
 }

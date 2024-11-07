@@ -7,7 +7,7 @@ export default class ResourcesLikesController {
    * /api/resources/likes:
    *   post:
    *     summary: Add a like to a resource
-   *     tags: [Resources]
+   *     tags: [Favorites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
