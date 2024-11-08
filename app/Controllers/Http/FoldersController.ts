@@ -426,6 +426,7 @@ public async show({ params, auth, response }: HttpContextContract) {
  * /api/folders-set:
  *   delete:
  *     summary: Видалення сета з папки
+ *     tags: [Folders]
  *     description: Даний метод дозволяє видалити заданий сет з вказаної папки за допомогою їх унікальних ідентифікаторів.
  *     parameters:
  *       - in: query

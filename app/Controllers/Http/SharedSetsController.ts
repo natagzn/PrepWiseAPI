@@ -295,7 +295,7 @@ export default class SharedSetsController {
  *     summary: Отримати списки наборів питань, поширених іншими користувачами для поточного користувача
  *     description: Повертає інформацію про набори питань, які були поширені поточному користувачу іншими користувачами. Для кожного набору виводиться автор, категорії, а також список користувачів, яким був поширений цей набір разом з їхніми правами доступу.
  *     tags:
- *       - Shared Sets
+ *       - SharedSets
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -478,7 +478,7 @@ public async getSharedSets({ auth, response }: HttpContextContract) {
  *     summary: Отримати списки наборів питань, поширених поточним користувачем іншим користувачам
  *     description: Повертає інформацію про набори питань, які були поширені поточним користувачем. Для кожного набору виводиться інформація про автора, категорії, а також список користувачів, яким набір був поширений разом з їхніми правами доступу.
  *     tags:
- *       - Shared Sets
+ *       - SharedSets
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -651,7 +651,7 @@ public async getSetsSharedByCurrentUser({ auth, response }: HttpContextContract)
 
 /**
  * @swagger
- * /shared-sets-author/{id}:
+ * /api/shared-sets-author/{id}:
  *   get:
  *     summary: Перевірка доступу поточного користувача до заданого набору
  *     description: Метод перевіряє, чи є поточний користувач автором або співредактором конкретного набору запитань.
