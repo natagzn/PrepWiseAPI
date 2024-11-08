@@ -153,12 +153,6 @@ export default class UsersController {
    *               location:
    *                 type: string
    *                 description: User's location
-   *               name:
-   *                 type: string
-   *                 description: User's name
-   *               surname:
-   *                 type: string
-   *                 description: User's surname
    *     responses:
    *       200:
    *         description: Profile updated successfully

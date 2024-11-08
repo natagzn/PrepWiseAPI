@@ -10,7 +10,7 @@ export default class FavouritesController {
    * /api/favorites/set:
    *   post:
    *     summary: Add a set to favourites
-   *     tags: [Favourites]
+   *     tags: [Favorites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -51,7 +51,7 @@ export default class FavouritesController {
    * /api/favorites/set:
    *   delete:
    *     summary: Remove a set from favourites
-   *     tags: [Favourites]
+   *     tags: [Favorites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -100,7 +100,7 @@ export default class FavouritesController {
    * /api/favorites/folder:
    *   post:
    *     summary: Add a folder to favourites
-   *     tags: [Favourites]
+   *     tags: [Favorites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -141,7 +141,7 @@ export default class FavouritesController {
    * /api/favorites/folder:
    *   delete:
    *     summary: Remove a folder from favourites
-   *     tags: [Favourites]
+   *     tags: [Favorites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -187,30 +187,7 @@ export default class FavouritesController {
 
 
 
-  /**
-   * @swagger
-   * /api/favorites/resource:
-   *   post:
-   *     summary: Add a resource to favourites
-   *     tags: [Favourites]
-   *     security:
-   *       - bearerAuth: []
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               resourceId:
-   *                 type: integer
-   *                 description: The ID of the resource to add to favourites
-   *     responses:
-   *       201:
-   *         description: Resource added to favourites successfully
-   *       500:
-   *         description: Failed to add resource to favourites
-   */
+  
   public async addResourceToFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
@@ -233,7 +210,7 @@ export default class FavouritesController {
    * /api/favorites/resource:
    *   delete:
    *     summary: Remove a resource from favourites
-   *     tags: [Favourites]
+   *     tags: [Favorites]
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -285,7 +262,7 @@ export default class FavouritesController {
    * /api/favorites:
    *   get:
    *     summary: Get user favourites
-   *     tags: [Favourites]
+   *     tags: [Favorites]
    *     security:
    *       - bearerAuth: []
    *     responses:
