@@ -148,7 +148,6 @@ Route.group(() => {
     Route.get('shared-sets-by-user', 'SharedSetsController.getSetsSharedByCurrentUser') 
     Route.get('shared-sets-author/:id', 'SharedSetsController.checkUserAccess') 
 
-
     Route.get('shared-sets/:id/author', 'SharedSetsController.getAuthorId')
   }).middleware("auth:api")
 }).prefix("/api");
