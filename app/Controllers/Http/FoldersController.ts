@@ -5,6 +5,7 @@ import Folder from 'App/Models/Folder'
 import { DateTime } from 'luxon'
 import SetInFolder from 'App/Models/SetInFolder'
 import Favourite from 'App/Models/Favorite'
+import Database from '@ioc:Adonis/Lucid/Database';
 
 
 export default class FoldersController {
@@ -125,7 +126,7 @@ export default class FoldersController {
 
   /**
    * @swagger
-   * /api/folders/{id}/sets:
+   * /api/folders/{id}/add-set:
    *   post:
    *     summary: Add a set to a folder
    *     tags: [Folders]
@@ -180,7 +181,7 @@ export default class FoldersController {
 
   /**
    * @swagger
-   * /api/folders:
+   * /api/folders-with-all:
    *   get:
    *     summary: Get all folders of the authenticated user
    *     tags: [Folders]
@@ -310,19 +311,22 @@ public async show({ params, auth, response }: HttpContextContract) {
       const folder = await Folder.findOrFail(params.id); // Знаходимо папку за ID
 
       // Отримуємо всі сети, які відносяться до вказаної папки
-      const sets = await SetInFolder.query()
-          .where('folderId', folder.folderId);
+      const sets = (await Database
+        .from('set_in_folders')
+        .where('folder_id', folder.folderId)
+        .select('set_id'))
+        .map(row => row.set_id);
 
       // Перевірка, чи вподобана папка поточним користувачем
       const isFavourite = await Favourite.query()
-          .where('folderId', folder.folderId)
-          .andWhere('userId', user.userId)
+          .where('folder_id', folder.folderId)
+          .andWhere('user_id', user.userId)
           .first();
 
       return response.status(200).json({
           id: folder.folderId,
           name: folder.name,
-          sets: sets, // Масив із сетами у папці та інформацією про них
+          sets: sets , // Масив із сетами у папці та інформацією про них
           isFavourite: !!isFavourite, // true, якщо вподобана, інакше false
           date: folder.date
       });
