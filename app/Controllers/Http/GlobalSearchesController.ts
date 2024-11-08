@@ -6,7 +6,7 @@ import User from 'App/Models/User'
 export default class GlobalSearchesController {
   /**
    * @swagger
-   * /global-search:
+   * /api/global-search:
    *   get:
    *     summary: Пошук по публічних сетах, ресурсах та користувачах
    *     tags:
@@ -77,7 +77,7 @@ export default class GlobalSearchesController {
     const sets = await Set.query()
       .where('access', true)
       .andWhere('name', 'LIKE', `%${query}%`)
-      .select('QuestionSet_id', 'name')
+      .select('question_set_id', 'name')
 
     // Пошук по ресурсах
     const resources = await Resource.query()
@@ -86,7 +86,7 @@ export default class GlobalSearchesController {
           .where('title', 'LIKE', `%${query}%`)
           .orWhere('description', 'LIKE', `%${query}%`)
       })
-      .select('resourceId', 'title', 'description')
+      .select('resource_id', 'title', 'description')
 
     // Пошук по користувачах
     const users = await User.query()
