@@ -640,4 +640,129 @@ public async getSetsSharedByCurrentUser({ auth, response }: HttpContextContract)
   }
 }
 
+
+
+
+
+
+
+
+
+
+/**
+ * @swagger
+ * /shared-sets-author/{id}:
+ *   get:
+ *     summary: Перевірка доступу поточного користувача до заданого набору
+ *     description: Метод перевіряє, чи є поточний користувач автором або співредактором конкретного набору запитань.
+ *     tags:
+ *       - Sets
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Ідентифікатор набору запитань
+ *     responses:
+ *       200:
+ *         description: Інформація про доступ до набору
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isAuthor:
+ *                   type: boolean
+ *                   description: Чи є поточний користувач автором набору
+ *                 UserCanEdit:
+ *                   type: boolean
+ *                   nullable: true
+ *                   description: Якщо користувач не автор, то це поле вказує, чи має він право на редагування. Значення `null` означає, що користувач не є співредактором.
+ *               example:
+ *                 isAuthor: false
+ *                 UserCanEdit: true
+ *       400:
+ *         description: Набір не знайдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Set ID is required"
+ *       404:
+ *         description: Набір не знайдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Set not found"
+ *       500:
+ *         description: Помилка на сервері
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error checking user access"
+ *                 error:
+ *                   type: string
+ *                   example: "Error message"
+ */
+
+public async checkUserAccess({ auth, params, response }: HttpContextContract) {
+  try {
+    const user = await auth.authenticate();
+    const setId = params.id;
+
+    // Отримуємо набір за його ID
+    const set = await Database
+    .from('sets')
+    .select('*')
+    .where('question_set_id', setId)
+    .first();
+
+    // Перевіряємо, чи існує набір
+    if (!set) {
+      return response.status(404).json({ message: 'Set not found' });
+    }
+
+    // Перевіряємо, чи поточний користувач є автором набору
+    if (set.user_id === user.userId) {
+      return response.status(200).json({
+        isAuthor: true,
+        UserCanEdit: null, // Для автора UserCanEdit не потрібне
+      });
+    }
+
+    // Якщо користувач не є автором, перевіряємо, чи є він співредактором
+    const sharedSet = await SharedSet.query()
+      .where('set_id', setId)
+      .andWhere('user_id', user.userId)
+      .first();
+
+    if (sharedSet) {
+      return response.status(200).json({
+        isAuthor: false,
+        UserCanEdit: sharedSet.edit, // true або false залежно від прав редагування
+      });
+    }
+
+    // Якщо користувач не є ні автором, ні співредактором
+    return response.status(200).json({
+      isAuthor: false,
+      UserCanEdit: null, // Користувач не має доступу
+    });
+  } catch (error) {
+    console.error('Error checking user access:', error);
+    return response.status(500).json({ message: 'Error checking user access', error });
+  }
+}
 }
