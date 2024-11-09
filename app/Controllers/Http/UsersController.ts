@@ -471,10 +471,10 @@ export default class UsersController {
       const publicSets = await Set.query()
         .where('userId', userId)
         .where('access', true) // фільтрація публічних сетів
-      const privateSets = await Set.query()
+      /*const privateSets = await Set.query()
         .where('userId', userId)
         .where('access', false) // фільтрація приватних сетів
-
+*/
       // Завантаження ресурсів користувача
       const resources = await Resource.query()
         .where('userId', userId)
