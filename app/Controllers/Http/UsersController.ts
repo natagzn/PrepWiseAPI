@@ -350,6 +350,7 @@ export default class UsersController {
       console.error('Error fetching random sets and resources:', error)
       return response.status(500).json({
         message: 'An error occurred while fetching random sets and resources',
+        error: error,
       })
     }
   }

@@ -201,3 +201,17 @@ Route.group(() => {
 }).prefix("/api");
 
 
+
+Route.group(() => {
+  Route.group(() => {
+    Route.post('/subscription-types', 'SubscriptionTypesController.create')
+    Route.get('/subscription-types', 'SubscriptionTypesController.index')
+    Route.get('/subscription-types/:id', 'SubscriptionTypesController.show')
+    Route.put('/subscription-types/:id', 'SubscriptionTypesController.update')
+    Route.delete('/subscription-types/:id', 'SubscriptionTypesController.delete')
+
+    Route.post('/subscription', 'SubscriptionsController.create')
+  }).middleware("auth:api")
+}).prefix("/api");
+
+
