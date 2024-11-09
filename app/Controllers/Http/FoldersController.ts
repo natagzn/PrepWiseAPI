@@ -12,7 +12,7 @@ export default class FoldersController {
 
 /**
  * @swagger
- * /folders:
+ * /api/folders:
  *   post:
  *     summary: Створення нової папки
  *     description: Створює нову папку для поточного користувача з можливістю додавання в неї сетів.

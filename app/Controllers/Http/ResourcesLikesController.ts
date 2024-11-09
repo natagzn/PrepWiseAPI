@@ -1,10 +1,12 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import ResourceLike from 'App/Models/ResourceLike';
+import Favorite from 'App/Models/Favorite';
+
 
 export default class ResourcesLikesController {
   /**
    * @swagger
-   * /api/resources/likes:
+   * /api/resources-likes:
    *   post:
    *     summary: Add a like to a resource
    *     tags: [Favorites]
@@ -63,8 +65,13 @@ export default class ResourcesLikesController {
           like: isLiked,
         }
       );
+
+      const favourite = await Favorite.create({
+        userId: user.userId,
+        resourceId
+      })
     
-      return response.status(201).json({ message: 'Like added successfully', resourceLike });
+      return response.status(201).json({ message: 'Like added successfully', resourceLike, favourite });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to add like', error });
     }    
