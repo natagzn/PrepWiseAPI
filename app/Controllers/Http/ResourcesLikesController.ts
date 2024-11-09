@@ -66,12 +66,15 @@ export default class ResourcesLikesController {
         }
       );
 
-      const favourite = await Favorite.create({
-        userId: user.userId,
-        resourceId
-      })
-    
-      return response.status(201).json({ message: 'Like added successfully', resourceLike, favourite });
+      if(isLiked){
+        const favourite = await Favorite.create({
+          userId: user.userId,
+          resourceId
+        })
+      
+        return response.status(201).json({ message: 'Like added successfully', resourceLike, favourite });
+      }
+      return response.status(201).json({ message: 'DisLike added successfully', resourceLike });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to add like', error });
     }    
@@ -186,6 +189,26 @@ export default class ResourcesLikesController {
       resourceLike.like = isLiked;
       await resourceLike.save();
 
+
+      if(!isLiked){
+        const favourite = await Favorite.query()
+        .where('userId', user.userId)
+        .andWhere('resourceId', params.resourceId)
+        .first()
+
+      if (!favourite) {
+        return response.status(404).json({ message: 'Favourite resource not found' })
+      }
+      await favourite.delete()
+      }else{
+        const favourite = await Favorite.create({
+          userId: user.userId,
+          resourceId: params.resourceId
+        })
+      
+        return response.status(201).json({ message: 'Like added successfully', resourceLike, favourite });
+      }
+      
       return response.status(200).json({ message: 'Like updated successfully', resourceLike });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to update like', error });
