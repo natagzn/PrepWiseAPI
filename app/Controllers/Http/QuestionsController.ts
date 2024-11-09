@@ -2,7 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Question from 'App/Models/Question'
 
 
-import PDFDocument from 'pdfkit'
+//import PDFDocument from 'pdfkit'
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import ExcelJS from 'exceljs'
 
