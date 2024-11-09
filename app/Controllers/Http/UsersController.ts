@@ -5,6 +5,54 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Set from 'App/Models/Set'
 import Resource from 'App/Models/Resource'
 import People from 'App/Models/People'
+import ResetCode from 'App/Models/ResetCode'
+import { DateTime } from 'luxon'
+//import { sendResetPasswordEmail } from 'App/Utils/EmailService'  // Приклад функції для відправки email
+
+
+
+import nodemailer from 'nodemailer'
+
+export async function sendResetPasswordEmail(email: string, resetCode: string) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // або інший сервіс
+    auth: {
+      user: 'n221222122005@gmail.com', // Ваша електронна пошта
+      pass: 'wxdu khhi mtgv rrqk', // Ваш пароль
+    },
+  })
+
+  const mailOptions = {
+    from: 'n221222122005@gmail.com',
+    to: email,
+    subject: 'Password Reset Code',
+    text: `Your password reset code is: ${resetCode}. It will expire in 10 minutes.`,
+  }
+
+  await transporter.sendMail(mailOptions)
+}
+
+export async function confirmEmail(email: string, resetCode: string) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // або інший сервіс
+    auth: {
+      user: 'n221222122005@gmail.com', // Ваша електронна пошта
+      pass: 'wxdu khhi mtgv rrqk', // Ваш пароль
+    },
+  })
+
+  const mailOptions = {
+    from: 'n221222122005@gmail.com',
+    to: email,
+    subject: 'Email confirmation',
+    text: `Your code is: ${resetCode}. It will expire in 10 minutes.`,
+  }
+
+  await transporter.sendMail(mailOptions)
+}
+
+
+
 
 export default class UsersController {
 
@@ -125,8 +173,6 @@ export default class UsersController {
   }
 
 
-
-
   /**
    * @swagger
    * /api/update:
@@ -241,9 +287,6 @@ export default class UsersController {
 
 
 
-
-
-
   /**
  * @swagger
  * /api/random:
@@ -311,7 +354,6 @@ export default class UsersController {
  *                   type: string
  *                   example: "An error occurred while fetching random sets and resources"
  */
-
   public async getRandomSetsAndResources({ auth, response }: HttpContextContract) {
     const userId = auth.user?.userId
 
@@ -457,7 +499,6 @@ export default class UsersController {
  *                   type: string
  *                   description: Details of the error
  */
-
   public async getUserInfoForSearch({ params, response }: HttpContextContract) {
     try {
       const userId = params.id
@@ -516,13 +557,6 @@ export default class UsersController {
       })
     }
   }
-
-
-
-
-
-
-
 
 
 /**
@@ -585,8 +619,6 @@ export default class UsersController {
  *       404:
  *         description: User not found
  */
-
-
   public async getUserInfoWithRelations({ auth, params, response }: HttpContextContract) {
     const currentUserId = auth.user?.userId
     const targetUserId = params.id
@@ -674,5 +706,232 @@ export default class UsersController {
     }
 
     return response.ok(userInfo)
+  }
+
+
+
+/**
+ * @swagger
+ * /api/reset-password:
+ *   post:
+ *     summary: Надсилає код для скидання пароля на електронну пошту користувача
+ *     description: Отримує електронну пошту користувача, генерує код скидання пароля і надсилає його користувачу.
+ *     tags:
+ *       - Password Reset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Електронна пошта користувача
+ *     responses:
+ *       200:
+ *         description: Код для скидання пароля відправлено на електронну пошту
+ *       404:
+ *         description: Користувач з вказаною електронною поштою не знайдений
+ */
+  public async sendResetPasswordEmail({ request, response }) {
+    const email = request.input('email')
+
+    // Перевірка, чи існує користувач з такою електронною поштою
+    const user = await User.query().where('email', email).first()
+
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' })
+    }
+
+    // Генерація коду скидання пароля (6 цифр)
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString()
+
+    // Створення запису в базі даних
+    await ResetCode.create({
+      userId: user.userId,
+      resetCode: resetCode,
+      expiresAt: DateTime.local().plus({ minutes: 10 }), // Код дійсний 10 хвилин
+    })
+
+    // Надсилання коду на пошту користувача
+    await sendResetPasswordEmail(user.email, resetCode)
+
+    return response.status(200).json({ message: 'Reset code sent to your email' })
+  }
+
+
+/**
+ * @swagger
+ * /api/check-reset-code:
+ *   post:
+ *     summary: Скидає пароль користувача
+ *     description: Отримує електронну пошту, код скидання пароля та новий пароль, перевіряє код і оновлює пароль користувача.
+ *     tags:
+ *       - Password Reset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Електронна пошта користувача
+ *               resetCode:
+ *                 type: string
+ *                 description: Код для скидання пароля
+ *               newPassword:
+ *                 type: string
+ *                 description: Новий пароль користувача
+ *     responses:
+ *       200:
+ *         description: Пароль успішно скинуто
+ *       400:
+ *         description: Невірний або прострочений код для скидання
+ *       404:
+ *         description: Користувач з вказаною електронною поштою не знайдений
+ */
+  public async resetPassword({ request, response }) {
+    const { email, resetCode, newPassword } = request.all()
+
+    // Знаходимо користувача
+    const user = await User.query().where('email', email).first()
+
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' })
+    }
+
+    // Перевірка, чи є код скидання пароля в базі
+    const storedCode = await ResetCode.query()
+      .where('user_id', user.userId)
+      .andWhere('reset_code', resetCode)
+      .first()
+
+    if (!storedCode) {
+      return response.status(400).json({ message: 'Invalid reset code' })
+    }
+
+    // Перевірка на термін дії коду
+    if (storedCode.expiresAt < DateTime.local()) {
+      return response.status(400).json({ message: 'Reset code expired' })
+    }
+
+    // Оновлення пароля користувача
+    user.password = newPassword
+    await user.save()
+
+    // Видалення коду з бази даних після використання
+    await storedCode.delete()
+
+    return response.status(200).json({ message: 'Password reset successfully' })
+  }
+
+
+
+/**
+ * @swagger
+ * /api/auth/send-code-register:
+ *   post:
+ *     summary: Надсилає код підтвердження електронної пошти
+ *     description: Отримує електронну пошту користувача і надсилає код для підтвердження на вказану адресу.
+ *     tags:
+ *       - Email Confirmation
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Електронна пошта користувача
+ *     responses:
+ *       200:
+ *         description: Код для підтвердження електронної пошти відправлено
+ *       404:
+ *         description: Користувач з вказаною електронною поштою не знайдений
+ */
+  public async sendConfirmEmail({ request, response }) {
+    const email = request.input('email')
+    const user = await User.query().where('email', email).first()
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' })
+    }
+
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString()
+
+    await ResetCode.create({
+      userId: user.userId,
+      resetCode: resetCode,
+      expiresAt: DateTime.local().plus({ minutes: 10 }), 
+    })
+
+    // Надсилання коду на пошту користувача
+    await confirmEmail(user.email, resetCode)
+
+    return response.status(200).json({ message: 'Reset code sent to your email' })
+  }
+
+
+  
+  /**
+ * @swagger
+ * /api/auth/check-code:
+ *   post:
+ *     summary: Підтверджує електронну пошту користувача
+ *     description: Перевіряє код підтвердження, отриманий користувачем, і підтверджує електронну пошту.
+ *     tags:
+ *       - Email Confirmation
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Електронна пошта користувача
+ *               resetCode:
+ *                 type: string
+ *                 description: Код для підтвердження
+ *     responses:
+ *       200:
+ *         description: Підтвердження електронної пошти успішне
+ *       400:
+ *         description: Невірний або прострочений код підтвердження
+ *       404:
+ *         description: Користувач з вказаною електронною поштою не знайдений
+ */
+  public async confirmationEmail({ request, response }) {
+    const { email, resetCode } = request.all()
+
+    const user = await User.query().where('email', email).first()
+
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' })
+    }
+
+    const storedCode = await ResetCode.query()
+      .where('user_id', user.userId)
+      .andWhere('reset_code', resetCode)
+      .first()
+
+    if (!storedCode) {
+      return response.status(400).json({ message: 'Invalid code' })
+    }
+
+    if (storedCode.expiresAt < DateTime.local()) {
+      return response.status(400).json({ message: 'Confirmation code expired' })
+    }
+
+
+    // Видалення коду з бази даних після використання
+    await storedCode.delete()
+
+    return response.status(200).json({ message: 'Email verification is successful' })
   }
 }

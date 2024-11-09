@@ -260,4 +260,67 @@ export default class ResourcesController {
       return response.status(500).json({ message: 'Failed to delete resource', error })
     }
   }
+
+
+
+  /**
+ * @swagger
+ * /api/resources-admin/{id}:
+ *   delete:
+ *     summary: Видаляє ресурс за його ідентифікатором
+ *     description: Цей метод видаляє ресурс з бази даних, якщо він існує, за вказаним ідентифікатором. Тільки для адміністратора.
+ *     tags:
+ *       - Resources
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Ідентифікатор ресурсу, який потрібно видалити
+ *     responses:
+ *       200:
+ *         description: Ресурс успішно видалено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Resource deleted successfully
+ *       404:
+ *         description: Ресурс не знайдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Resource not found
+ *       500:
+ *         description: Помилка при видаленні ресурсу
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Failed to delete resource
+ *                 error:
+ *                   type: string
+ *                   description: Деталі помилки
+ */
+  public async deleteAdmin({params, response }: HttpContextContract) {
+    try {
+      const resource = await Resource.findOrFail(params.id)
+      await resource.delete()
+
+      return response.status(200).json({ message: 'Resource deleted successfully' })
+    } catch (error) {
+      return response.status(500).json({ message: 'Failed to delete resource', error })
+    }
+  }
 }

@@ -479,7 +479,62 @@ public async delete({ auth, params, response }: HttpContextContract) {
     }
   }
 
-  
+
+
+  /**
+ * @swagger
+ * /api/sets-admin/{id}:
+ *   delete:
+ *     summary: Видалення набору адміністратором
+ *     description: Видаляє набір питань з вказаним ідентифікатором. Доступно тільки для адміністратора.
+ *     tags:
+ *       - Sets
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Ідентифікатор набору питань (QuestionSet_id)
+ *     responses:
+ *       200:
+ *         description: Набір успішно видалений
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Set deleted successfully
+ *       500:
+ *         description: Помилка видалення набору
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Failed to delete set
+ *                 error:
+ *                   type: object
+ *                   description: Деталі помилки
+ */
+
+  public async deleteAdmin({params, response }: HttpContextContract) {
+    try {
+      const setId = params.id
+      const set = await Set.query()
+        .where('QuestionSet_id', setId)
+        .firstOrFail()
+
+      await set.delete()
+      return response.status(200).json({ message: 'Set deleted successfully' })
+    } catch (error) {
+      return response.status(500).json({ message: 'Failed to delete set', error })
+    }
+  }
 
   
   // Get all sets

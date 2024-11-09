@@ -11,7 +11,7 @@ import Feedback from 'App/Models/Feedback'
 export default class FeedbacksController {
     /**
    * @swagger
-   * /api/feedbacks:
+   * /api/feedback:
    *   post:
    *     summary: Створити новий зворотний зв'язок
    *     tags: [Feedbacks]

@@ -1,8 +1,17 @@
 import Route from '@ioc:Adonis/Core/Route'
 
+
+
+
 Route.group(()=>{
   Route.post("/auth/login", "AuthController.login");
   Route.post("/auth/register", "AuthController.register");
+
+  Route.post("/auth/send-code-register", "UsersController.sendConfirmEmail");
+  Route.post("/auth/check-code", "UsersController.confirmationEmail");
+
+  Route.post("/reset-password", "UsersController.sendResetPasswordEmail");
+  Route.post("/check-reset-code", "UsersController.resetPassword");
 
 
 Route.group(()=>{
@@ -43,7 +52,11 @@ Route.group(() => {
     Route.post('/questions', 'QuestionsController.create')
     Route.get('/questions/:id', 'QuestionsController.show')
     Route.put('/questions/:id', 'QuestionsController.update')
-    Route.delete('/questions/:id', 'QuestionsController.delete')    
+    Route.delete('/questions/:id', 'QuestionsController.delete')  
+    
+    Route.get('/questions-export', 'QuestionsController.export')  
+    Route.get('/questions-export-excel', 'QuestionsController.exportToExcel')  
+
 
   }).middleware("auth:api")
 }).prefix("/api");
@@ -56,6 +69,8 @@ Route.group(() => {
     Route.put('/sets/:id', 'SetsController.update')
     Route.delete('/sets/:id', 'SetsController.delete')  
     Route.get('/setsAll', 'SetsController.getUserSetsWithQuestions')  
+
+    Route.delete('/sets-admin/:id', 'SetsController.deleteAdmin')  
 
   }).middleware("auth:api")
 }).prefix("/api");
@@ -106,6 +121,9 @@ Route.group(() => {
     Route.get('/resources/:id', 'ResourcesController.show')        // Отримання конкретного ресурсу
     Route.put('/resources/:id', 'ResourcesController.update')      // Оновлення ресурсу
     Route.delete('/resources/:id', 'ResourcesController.delete')
+
+    Route.delete('/resources-admin/:id', 'ResourcesController.delete')
+
   }).middleware("auth:api")
 }).prefix("/api");
 
