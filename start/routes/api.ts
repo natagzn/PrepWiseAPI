@@ -13,6 +13,8 @@ Route.group(()=>{
   Route.post('/update', 'UsersController.updateProfile')
 
   Route.get('/random', 'UsersController.getRandomSetsAndResources')
+  Route.get('/search/:id', 'UsersController.getUserInfoForSearch')
+  Route.get('/another-profile/:id', 'UsersController.getUserInfoWithRelations')
 
 
   Route.post('/feedback', 'FeedbacksController.store')

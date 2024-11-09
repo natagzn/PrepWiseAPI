@@ -353,4 +353,325 @@ export default class UsersController {
       })
     }
   }
+
+
+
+/**
+ * @swagger
+ * /api/search/{id}:
+ *   get:
+ *     summary: Get detailed information about a user for search purposes
+ *     description: Retrieve user details, including public and private sets, as well as resources created by the user.
+ *     tags:
+ *       - GlobalSearch
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the user
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: Unique identifier of the user
+ *                 username:
+ *                   type: string
+ *                   description: Username of the user
+ *                 publicSets:
+ *                   type: array
+ *                   description: List of public sets created by the user
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: Unique identifier of the set
+ *                       name:
+ *                         type: string
+ *                         description: Name of the set
+ *                       levelId:
+ *                         type: integer
+ *                         description: Level identifier of the set
+ *                       shared:
+ *                         type: boolean
+ *                         description: Whether the set is shared
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Creation timestamp of the set
+ *                 resources:
+ *                   type: array
+ *                   description: List of resources created by the user
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: Unique identifier of the resource
+ *                       title:
+ *                         type: string
+ *                         description: Title of the resource
+ *                       description:
+ *                         type: string
+ *                         description: Description of the resource
+ *                       levelId:
+ *                         type: integer
+ *                         description: Level identifier of the resource
+ *                       categoryId:
+ *                         type: integer
+ *                         description: Category identifier of the resource
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Creation timestamp of the resource
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating that the user was not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating that the request failed
+ *                 error:
+ *                   type: string
+ *                   description: Details of the error
+ */
+
+  public async getUserInfoForSearch({ params, response }: HttpContextContract) {
+    try {
+      const userId = params.id
+
+      // Отримання користувача за ID
+      const user = await User.find(userId)
+      if (!user) {
+        return response.notFound({ message: 'User not found' })
+      }
+
+      // Завантаження публічних та приватних сетів користувача
+      const publicSets = await Set.query()
+        .where('userId', userId)
+        .where('access', true) // фільтрація публічних сетів
+      const privateSets = await Set.query()
+        .where('userId', userId)
+        .where('access', false) // фільтрація приватних сетів
+
+      // Завантаження ресурсів користувача
+      const resources = await Resource.query()
+        .where('userId', userId)
+
+      // Формування кінцевої відповіді
+      const userInfo = {
+        id: user.userId,
+        username: user.username,
+        publicSets: publicSets.map(set => ({
+          id: set.QuestionSet_id,
+          name: set.name,
+          levelId: set.levelId,
+          shared: set.shared,
+          createdAt: set.createdAt,
+        })),
+        /*privateSets: privateSets.map(set => ({
+          id: set.QuestionSet_id,
+          name: set.name,
+          levelId: set.levelId,
+          shared: set.shared,
+          createdAt: set.createdAt,
+        })),*/
+        resources: resources.map(resource => ({
+          id: resource.resourceId,
+          title: resource.title,
+          description: resource.description,
+          levelId: resource.levelId,
+          categoryId: resource.categoryId,
+          createdAt: resource.createdAt,
+        })),
+      }
+
+      return response.ok(userInfo)
+    } catch (error) {
+      return response.internalServerError({
+        message: 'Failed to retrieve user information',
+        error: error.message,
+      })
+    }
+  }
+
+
+
+
+
+
+
+
+
+/**
+ * @swagger
+ * /api/another-profile/{id}:
+ *   get:
+ *     summary: Get detailed information about a user with relationships
+ *     description: Retrieve detailed information about a user, including public sets, resources, subscriber and subscription counts, and the relationship status with the authenticated user.
+ *     tags:
+ *       - GlobalSearch
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user to retrieve information for
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: User ID
+ *                 username:
+ *                   type: string
+ *                   description: Username of the user
+ *                 description:
+ *                   type: string
+ *                   description: Bio or description of the user
+ *                 location:
+ *                   type: string
+ *                   description: User's location
+ *                 publicSetIds:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Array of IDs for user's public sets
+ *                 resourceIds:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Array of IDs for user's resources
+ *                 subscriberCount:
+ *                   type: integer
+ *                   description: Number of users subscribed to this user
+ *                 subscriptionCount:
+ *                   type: integer
+ *                   description: Number of users this user is subscribed to
+ *                 relationshipStatus:
+ *                   type: string
+ *                   enum: [friend, subscriber, subscription, null]
+ *                   description: Relationship status between authenticated user and target user
+ *       401:
+ *         description: Unauthorized - authentication required
+ *       404:
+ *         description: User not found
+ */
+
+
+  public async getUserInfoWithRelations({ auth, params, response }: HttpContextContract) {
+    const currentUserId = auth.user?.userId
+    const targetUserId = params.id
+
+    if (!currentUserId) {
+      return response.unauthorized({ message: 'Unauthorized' })
+    }
+
+    // Отримання користувача за targetUserId
+    const user = await User.find(targetUserId)
+    if (!user) {
+      return response.notFound({ message: 'User not found' })
+    }
+
+    // Отримання ID публічних сетів користувача
+    const publicSets = await Set.query()
+      .where('user_id', targetUserId)
+      .where('access', true) // Публічні сети
+    const publicSetIds = publicSets.map(set => set.QuestionSet_id)
+
+    // Отримання ID ресурсів користувача
+    const resources = await Resource.query()
+      .where('user_id', targetUserId)
+    const resourceIds = resources.map(resource => resource.resourceId)
+
+    // Кількість підписників (хто підписаний на targetUserId)
+    const subscriberCountResult = await People.query()
+      .where('friend_user_id', targetUserId)
+      .count('user_id as total')
+    const subscriberCount = subscriberCountResult[0].$extras.total
+
+    // Кількість підписок (на кого підписаний targetUserId)
+    const subscriptionCountResult = await People.query()
+      .where('user_id', targetUserId)
+      .count('friend_user_id as total')
+    const subscriptionCount = subscriptionCountResult[0].$extras.total
+
+    // Визначення статусу між поточним користувачем та цільовим користувачем
+    let status: 'friend' | 'subscriber' | 'subscription' | null = null
+
+    // Перевірка на друзів
+    const isFriend = await People.query()
+      .where('user_id', currentUserId)
+      .where('friend_user_id', targetUserId)
+      .whereIn('friend_user_id', (subquery) => {
+        subquery.from('people').where('user_id', targetUserId).select('user_id')
+      })
+      .first()
+
+    if (isFriend) {
+      status = 'friend'
+    } else {
+      // Перевірка на підписників
+      const isSubscriber = await People.query()
+        .where('friend_user_id', targetUserId)
+        .where('user_id', currentUserId)
+        .first()
+
+      if (isSubscriber) {
+        status = 'subscriber'
+      } else {
+        // Перевірка на підписки
+        const isSubscription = await People.query()
+          .where('user_id', currentUserId)
+          .where('friend_user_id', targetUserId)
+          .first()
+
+        if (isSubscription) {
+          status = 'subscription'
+        }
+      }
+    }
+
+    // Формування кінцевої відповіді
+    const userInfo = {
+      id: user.userId,
+      username: user.username,
+      description: user.bio,
+      location: user.location,
+      publicSetIds,
+      resourceIds,
+      subscriberCount,
+      subscriptionCount,
+      relationshipStatus: status,
+    }
+
+    return response.ok(userInfo)
+  }
 }
