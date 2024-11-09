@@ -1,6 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import HelpAnswer from 'App/Models/HelpAnswer'
 import Question from 'App/Models/Question'
+import User from 'App/Models/User'
+
 import { DateTime } from 'luxon'
 
 export default class HelpAnswersController {
@@ -124,11 +126,31 @@ export default class HelpAnswersController {
 
       // Отримання відповідей на це питання
       const helpAnswers = await HelpAnswer.query()
-        .where('questionId', questionId)
-        .preload('friend') // завантажуємо інформацію про друга (користувача), який надав відповідь
+      .where('questionId', questionId)
 
-      return response.ok({ question, helpAnswers })
-    } catch (error) {
+    // Формування кінцевої відповіді з потрібними полями
+    const formattedAnswers = await Promise.all(
+      helpAnswers.map(async (answer) => {
+        // Знайти користувача за friendId для отримання username
+        const user = await User.find(answer.friendId)
+        return {
+          friendId: user?.userId,
+          username: user?.username,
+          content: answer.content,
+          date: answer.createdAt,
+        }
+      })
+    )
+
+    return response.ok({
+      question: {
+        id: question.questionId,
+        title: question.content,
+        createdAt: question.createdAt,
+      },
+      helpAnswers: formattedAnswers,
+    })
+      } catch (error) {
       return response.internalServerError({ message: 'Failed to retrieve question and help answers', error: error.message })
     }
   }
