@@ -223,7 +223,8 @@ export default class DateOfVisitsController {
         .whereBetween('date', [startOfMonth.toSQLDate(), endOfMonth.toSQLDate()])
 
       // Форматування результату - лише дні
-      const visitDays = visits.map((visit) => visit.date.day)
+      const visitDays = [...new Set(visits.map((visit) => visit.date.day))]
+
 
       return response.status(200).json({
         message: 'Days of visits for the current month',
