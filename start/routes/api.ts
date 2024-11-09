@@ -166,6 +166,8 @@ Route.group(() => {
     Route.get('/help-requests', 'NotificationsController.getHelpRequests')
     Route.get('/help-answers', 'NotificationsController.getHelpAnswers')
     Route.post('/notifications', 'NotificationsController.create')
+
+    Route.get('/notifications-user', 'NotificationsController.getUserNotifications')
   }).middleware("auth:api")
 }).prefix("/api");
 

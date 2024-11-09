@@ -4,8 +4,6 @@ import TypesNotification from './TypesNotification'
 import HelpAnswer from './HelpAnswer'
 import RequestForHelp from './RequestForHelp'
 
-
-
 export default class Notification extends BaseModel {
   @column({ isPrimary: true })
   public id: number
@@ -22,14 +20,15 @@ export default class Notification extends BaseModel {
   @column.date()
   public date: DateTime
 
-  @belongsTo(() => TypesNotification)
+  @belongsTo(() => TypesNotification, { foreignKey: 'typeId' })
   public type: BelongsTo<typeof TypesNotification>
 
-  @belongsTo(() => HelpAnswer)
+  @belongsTo(() => HelpAnswer, { foreignKey: 'answerId' })
   public answer: BelongsTo<typeof HelpAnswer>
 
-  @belongsTo(() => RequestForHelp)
+  @belongsTo(() => RequestForHelp, { foreignKey: 'questionId' })
   public question: BelongsTo<typeof RequestForHelp>
+
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

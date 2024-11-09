@@ -1,6 +1,5 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import HelpAnswer from 'App/Models/HelpAnswer'
-import Friend from 'App/Models/People'
 import Question from 'App/Models/Question'
 import { DateTime } from 'luxon'
 
@@ -9,7 +8,7 @@ export default class HelpAnswersController {
    * @swagger
    * /api/help-answers:
    *   post:
-   *     summary: Create a new help answer
+   *     summary: Create a new help answer (поточний користувач дає відповідь на питання)
    *     tags: [HelpAnswers]
    *     security:
    *       - bearerAuth: []
@@ -20,9 +19,6 @@ export default class HelpAnswersController {
    *           schema:
    *             type: object
    *             properties:
-   *               friendId:
-   *                 type: integer
-   *                 description: The ID of the friend providing the answer
    *               questionId:
    *                 type: integer
    *                 description: The ID of the question being answered
@@ -47,19 +43,16 @@ export default class HelpAnswersController {
    *         description: Internal server error
    */
   // Створення нової відповіді
-  public async create({ request, response }: HttpContextContract) {
+  public async create({auth, request, response }: HttpContextContract) {
     try {
-      const { friendId, questionId, content } = request.all()
+      const user = await auth.authenticate();
+      const friendId = user.userId;
+
+      const {questionId, content } = request.all()
 
       // Перевірка наявності friendId, questionId та content
       if (!friendId || !questionId || !content) {
         return response.badRequest({ message: 'friendId, questionId and content are required' })
-      }
-
-      // Перевірка, чи існує друг з таким ID
-      const friendExists = await Friend.find(friendId)
-      if (!friendExists) {
-        return response.badRequest({ message: 'Friend with the specified ID does not exist' })
       }
 
       // Перевірка, чи існує питання з таким ID
