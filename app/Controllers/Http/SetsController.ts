@@ -402,22 +402,44 @@ export default class SetsController {
     try {
       const user = await auth.authenticate()
       const setId = params.id
+  
+      // сет, який належить поточному користувачу
       const set = await Set.query()
         .where('QuestionSet_id', setId)
         .where('userId', user.userId)
-        .firstOrFail()
-
+        .first()
+  
+      console.log('Found set:', set)
+  
+      if (!set) {
+        return response.status(404).json({ message: 'Set not found' })
+      }
+  
       const data = request.only(['name', 'access', 'level_id', 'shared'])
+  
       data.access = data.access === 'true';
       data.shared = data.shared === 'true';
+  
       set.merge(data)
       await set.save()
-
+  
+      console.log('Checking access change to false, and deleting favourites for setId:', setId)
+  
+      if (data.access === false) {
+        const deletedFavourites = await Favourite.query()
+          .where('questionListId', setId) 
+          .delete() 
+        console.log('Deleted favourites:', deletedFavourites)
+      }
+  
       return response.status(200).json({ message: 'Set updated successfully', set })
     } catch (error) {
-      return response.status(500).json({ message: 'Failed to update set', error })
+      console.error('Error updating set:', error)
+  
+      return response.status(500).json({ message: 'Failed to update set', error: error.message })
     }
   }
+  
 
 
   /**
