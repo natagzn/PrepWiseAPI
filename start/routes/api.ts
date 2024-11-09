@@ -186,6 +186,8 @@ Route.group(() => {
   Route.group(() => {
     Route.get('/date-of-visits', 'DateOfVisitsController.index')
     Route.post('/date-of-visits/create', 'DateOfVisitsController.create')
+    Route.get('/date-of-visits/days', 'DateOfVisitsController.getCurrentMonthVisitDays')
+
 
     Route.get('/global-search', 'GlobalSearchesController.globalSearch')
   }).middleware("auth:api")

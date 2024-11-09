@@ -156,4 +156,82 @@ export default class DateOfVisitsController {
       })
     }
   }
+
+
+
+
+  /**
+ * @swagger
+ * /api/date-of-visits/days:
+ *   get:
+ *     summary: Отримати дні відвідування поточного місяця
+ *     description: Повертає всі дні (числа), коли поточний авторизований користувач відвідував систему протягом поточного місяця.
+ *     tags:
+ *       - DateOfVisits
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Успішно отримано дні відвідування
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Days of visits for the current month
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *                   example: [1, 3, 10, 12, 20]
+ *       401:
+ *         description: Неавторизований доступ. Користувач не аутентифікований
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized access
+ *       500:
+ *         description: Помилка на сервері при отриманні днів відвідування
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error fetching visit days
+ */
+
+  public async getCurrentMonthVisitDays({ auth, response }: HttpContextContract) {
+    try {
+      // Отримання аутентифікованого користувача
+      const user = await auth.authenticate()
+
+      // Діапазон дат для поточного місяця
+      const startOfMonth = DateTime.local().startOf('month')
+      const endOfMonth = DateTime.local().endOf('month')
+
+      // Отримання днів відвідування для поточного місяця
+      const visits = await DateOfVisit.query()
+        .where('userId', user.userId)
+        .whereBetween('date', [startOfMonth.toSQLDate(), endOfMonth.toSQLDate()])
+
+      // Форматування результату - лише дні
+      const visitDays = visits.map((visit) => visit.date.day)
+
+      return response.status(200).json({
+        message: 'Days of visits for the current month',
+        data: visitDays,
+      })
+    } catch (error) {
+      console.error('Error fetching visit days:', error)
+      return response.status(500).json({ message: 'Error fetching visit days' })
+    }
+  }
 }
