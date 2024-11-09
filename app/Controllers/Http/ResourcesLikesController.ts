@@ -225,6 +225,19 @@ export default class ResourcesLikesController {
 
       await resourceLike.delete();
 
+
+
+      const favourite = await Favorite.query()
+        .where('userId', user.userId)
+        .andWhere('resourceId', params.resourceId)
+        .first()
+
+      if (!favourite) {
+        return response.status(404).json({ message: 'Favourite resource not found' })
+      }
+
+      await favourite.delete()
+
       return response.status(200).json({ message: 'Like removed successfully' });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to remove like', error });
