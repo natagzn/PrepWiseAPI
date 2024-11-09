@@ -2,6 +2,9 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import Hash from '@ioc:Adonis/Core/Hash'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import Set from 'App/Models/Set'
+import Resource from 'App/Models/Resource'
+import People from 'App/Models/People'
 
 export default class UsersController {
 
@@ -236,4 +239,118 @@ export default class UsersController {
     }
   }
 
+
+
+
+
+
+  /**
+ * @swagger
+ * /api/random:
+ *   get:
+ *     summary: Отримання випадкових публічних сетів і ресурсів від користувачів, на яких підписаний поточний користувач
+ *     description: Повертає до 6 випадкових публічних сетів та 6 випадкових ресурсів, створених користувачами, на яких підписаний поточний користувач.
+ *     tags:
+ *       - Home
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Успішне отримання списку сетів і ресурсів
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 sets:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       QuestionSet_id:
+ *                         type: integer
+ *                         example: 1
+ *                       name:
+ *                         type: string
+ *                         example: "Програмування"
+ *                       userId:
+ *                         type: integer
+ *                         example: 5
+ *                 resources:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       resourceId:
+ *                         type: integer
+ *                         example: 2
+ *                       title:
+ *                         type: string
+ *                         example: "Основи JavaScript"
+ *                       userId:
+ *                         type: integer
+ *                         example: 5
+ *       401:
+ *         description: Помилка автентифікації
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *       500:
+ *         description: Помилка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while fetching random sets and resources"
+ */
+
+  public async getRandomSetsAndResources({ auth, response }: HttpContextContract) {
+    const userId = auth.user?.userId
+
+    if (!userId) {
+      return response.status(401).json({ message: 'Unauthorized' })
+    }
+
+    try {
+      // Отримання ID всіх користувачів, яких додав поточний користувач
+      const friends = await People.query()
+        .where('userId', userId)
+        .select('friendUserId')
+      const addedUserIds = friends.map(friend => friend.friendUserId)
+
+      if (addedUserIds.length === 0) {
+        return response.status(200).json({ sets: [], resources: [] })
+      }
+
+      // Отримання випадкових публічних сетів від користувачів, на яких підписаний поточний користувач
+      const sets = await Set.query()
+        .whereIn('user_id', addedUserIds)
+        .andWhere('access', true)
+        .orderByRaw('RANDOM()')
+        .limit(6)
+        .select('question_set_id', 'name', 'user_id')
+
+      // Отримання випадкових ресурсів від користувачів, на яких підписаний поточний користувач
+      const resources = await Resource.query()
+        .whereIn('user_id', addedUserIds)
+        .orderByRaw('RANDOM()')
+        .limit(6)
+        .select('resource_id', 'title', 'user_id')
+
+      return response.status(200).json({ sets, resources })
+    } catch (error) {
+      console.error('Error fetching random sets and resources:', error)
+      return response.status(500).json({
+        message: 'An error occurred while fetching random sets and resources',
+      })
+    }
+  }
 }

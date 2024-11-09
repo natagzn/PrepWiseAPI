@@ -12,6 +12,9 @@ Route.group(()=>{
   Route.put('/change-password', 'UsersController.changePassword').middleware('auth')
   Route.post('/update', 'UsersController.updateProfile')
 
+  Route.get('/random', 'UsersController.getRandomSetsAndResources')
+
+
   Route.post('/feedback', 'FeedbacksController.store')
   }).middleware("auth:api");
 }).prefix("/api");
