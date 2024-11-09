@@ -56,4 +56,84 @@ export default class FeedbacksController {
 
     return response.status(201).json(feedback)
   }
+
+
+  /**
+   * @swagger
+   * /api/feedback:
+   *   get:
+   *     summary: Get all feedback records
+   *     description: Retrieve a list of all feedback records, including associated user information (username, id, email).
+   *     tags:
+   *       - Feedbacks
+   *     responses:
+   *       200:
+   *         description: A list of feedback records
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 type: object
+   *                 properties:
+   *                   feedbackId:
+   *                     type: integer
+   *                     description: Unique identifier of the feedback
+   *                   userId:
+   *                     type: integer
+   *                     description: ID of the user who gave the feedback
+   *                   content:
+   *                     type: string
+   *                     description: The content of the feedback
+   *                   imageUrl:
+   *                     type: string
+   *                     description: URL of the feedback image (optional)
+   *                   createdAt:
+   *                     type: string
+   *                     format: date-time
+   *                     description: Timestamp when the feedback was created
+   *                   updatedAt:
+   *                     type: string
+   *                     format: date-time
+   *                     description: Timestamp when the feedback was last updated
+   *                   user:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: integer
+   *                         description: User ID
+   *                       username:
+   *                         type: string
+   *                         description: Username of the user
+   *                       email:
+   *                         type: string
+   *                         description: Email of the user
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 error:
+   *                   type: string
+   */
+  public async index({ response }: HttpContextContract) {
+    try {
+      // Отримуємо всі записи з таблиці Feedback, завантажуємо лише потрібні поля з користувача
+      const feedbacks = await Feedback.query()
+        .preload('user', (userQuery) => {
+          userQuery.select('user_id', 'username', 'email') // Вибираємо тільки id, username, email
+        })
+
+      return response.ok(feedbacks)
+    } catch (error) {
+      return response.internalServerError({
+        message: 'Failed to retrieve feedbacks',
+        error: error.message,
+      })
+    }
+  }
 }
