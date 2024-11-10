@@ -626,8 +626,6 @@ export default class UsersController {
     if (!currentUserId) {
       return response.unauthorized({ message: 'Unauthorized' })
     }
-
-    // Отримання користувача за targetUserId
     const user = await User.find(targetUserId)
     if (!user) {
       return response.notFound({ message: 'User not found' })
@@ -660,13 +658,24 @@ export default class UsersController {
     let status: 'friend' | 'subscriber' | 'subscription' | null = null
 
     // Перевірка на друзів
-    const isFriend = await People.query()
-      .where('user_id', currentUserId)
-      .where('friend_user_id', targetUserId)
-      .whereIn('friend_user_id', (subquery) => {
-        subquery.from('people').where('user_id', targetUserId).select('user_id')
-      })
-      .first()
+    const isSubscribedToTarget = await People.query()
+  .where('user_id', currentUserId)
+  .andWhere('friend_user_id', targetUserId)
+  .first()
+
+// Якщо поточний користувач підписаний на цільового, перевіряємо, чи цільовий користувач підписаний на поточного
+let isFriend = false
+if (isSubscribedToTarget) {
+  const isTargetSubscribedToCurrent = await People.query()
+    .where('user_id', targetUserId)
+    .andWhere('friend_user_id', currentUserId)
+    .first()
+
+  // Встановлюємо значення `isFriend` тільки якщо обидва користувачі підписані один на одного
+  if (isTargetSubscribedToCurrent) {
+    isFriend = true
+  }
+}
 
     if (isFriend) {
       status = 'friend'
@@ -682,8 +691,8 @@ export default class UsersController {
       } else {
         // Перевірка на підписки
         const isSubscription = await People.query()
-          .where('user_id', currentUserId)
-          .where('friend_user_id', targetUserId)
+          .where('user_id', targetUserId)
+          .where('friend_user_id', currentUserId)
           .first()
 
         if (isSubscription) {
