@@ -745,7 +745,7 @@ export default class UsersController {
     }
 
     // Генерація коду скидання пароля (6 цифр)
-    const resetCode = Math.floor(100000 + Math.random() * 900000).toString()
+    const resetCode = Math.floor(1000 + Math.random() * 9000).toString()
 
     // Створення запису в базі даних
     await ResetCode.create({
@@ -861,7 +861,7 @@ export default class UsersController {
       return response.status(404).json({ message: 'User not found' })
     }
 
-    const resetCode = Math.floor(100000 + Math.random() * 900000).toString()
+    const resetCode = Math.floor(1000 + Math.random() * 9000).toString()
 
     await ResetCode.create({
       userId: user.userId,
