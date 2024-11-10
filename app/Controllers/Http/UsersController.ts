@@ -687,7 +687,7 @@ if (isSubscribedToTarget) {
         .first()
 
       if (isSubscriber) {
-        status = 'subscriber'
+        status = 'subscription'
       } else {
         // Перевірка на підписки
         const isSubscription = await People.query()
@@ -696,7 +696,7 @@ if (isSubscribedToTarget) {
           .first()
 
         if (isSubscription) {
-          status = 'subscription'
+          status = 'subscriber'
         }
       }
     }
