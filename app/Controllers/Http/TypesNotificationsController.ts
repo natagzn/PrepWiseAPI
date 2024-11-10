@@ -4,16 +4,61 @@ import { schema } from '@ioc:Adonis/Core/Validator'
 
 export default class TypesNotificationsController {
   /**
-   * GET /types_notifications - отримати всі записи
-   */
+ * @swagger
+ * /api/types_notifications:
+ *   get:
+ *     summary: Отримати всі типи сповіщень
+ *     tags:
+ *       - TypesNotifications
+ *     responses:
+ *       200:
+ *         description: Успішно отримано список всіх типів сповіщень
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/TypeNotification'
+ */
   public async index({ response }: HttpContextContract) {
     const types = await TypeNotification.all()
     return response.status(200).json({ data: types })
   }
 
   /**
-   * POST /types_notifications - створити новий тип сповіщення
-   */
+ * @swagger
+ * /api/types_notifications:
+ *   post:
+ *     summary: Створити новий тип сповіщення
+ *     tags:
+ *       - TypesNotifications
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "New Notification Type"
+ *     responses:
+ *       201:
+ *         description: Тип сповіщення успішно створено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "TypeNotification created successfully"
+ *                 data:
+ *                   $ref: '#/components/schemas/TypeNotification'
+ */
   public async create({ request, response }: HttpContextContract) {
     const typeNotificationSchema = schema.create({
       name: schema.string(),
@@ -29,8 +74,32 @@ export default class TypesNotificationsController {
   }
 
   /**
-   * GET /types_notifications/:id - отримати тип сповіщення за ID
-   */
+ * @swagger
+ * /api/types_notifications/{id}:
+ *   get:
+ *     summary: Отримати тип сповіщення за ID
+ *     tags:
+ *       - TypesNotifications
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID типу сповіщення
+ *     responses:
+ *       200:
+ *         description: Успішно отримано тип сповіщення
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/TypeNotification'
+ *       404:
+ *         description: Тип сповіщення не знайдено
+ */
   public async show({ params, response }: HttpContextContract) {
     const type = await TypeNotification.find(params.id)
     if (!type) {
@@ -40,8 +109,45 @@ export default class TypesNotificationsController {
   }
 
   /**
-   * PUT /types_notifications/:id - оновити тип сповіщення за ID
-   */
+ * @swagger
+ * /api/types_notifications/{id}:
+ *   put:
+ *     summary: Оновити тип сповіщення за ID
+ *     tags:
+ *       - TypesNotifications
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID типу сповіщення
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Updated Notification Type"
+ *     responses:
+ *       200:
+ *         description: Тип сповіщення успішно оновлено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "TypeNotification updated successfully"
+ *                 data:
+ *                   $ref: '#/components/schemas/TypeNotification'
+ *       404:
+ *         description: Тип сповіщення не знайдено
+ */
   public async update({ params, request, response }: HttpContextContract) {
     const type = await TypeNotification.find(params.id)
     if (!type) {
@@ -64,8 +170,33 @@ export default class TypesNotificationsController {
   }
 
   /**
-   * DELETE /types_notifications/:id - видалити тип сповіщення за ID
-   */
+ * @swagger
+ * /api/types_notifications/{id}:
+ *   delete:
+ *     summary: Видалити тип сповіщення за ID
+ *     tags:
+ *       - TypesNotifications
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID типу сповіщення
+ *     responses:
+ *       200:
+ *         description: Тип сповіщення успішно видалено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "TypeNotification deleted successfully"
+ *       404:
+ *         description: Тип сповіщення не знайдено
+ */
   public async destroy({ params, response }: HttpContextContract) {
     const type = await TypeNotification.find(params.id)
     if (!type) {

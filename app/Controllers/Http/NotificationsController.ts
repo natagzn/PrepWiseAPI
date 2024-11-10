@@ -2,6 +2,8 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import RequestForHelp from 'App/Models/RequestForHelp'
 import HelpAnswer from 'App/Models/HelpAnswer'
 import Notification from 'App/Models/Notification'
+import TypesNotification from 'App/Models/TypesNotification'
+
 import { DateTime } from 'luxon'
 
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
@@ -157,29 +159,25 @@ export default class NotificationsController {
         });
 
       // Форматуємо результат
-      const formattedNotifications = notifications.map((notification) => {
-        const typeId = notification.typeId;
-        const date = notification.createdAt;
-        const questionId = notification.questionId;
-        const answerId = notification.answerId;
-
-        /*let message = '';
-
-        if (notification.answer) {
-          // Якщо це відповідь на допомогу
-          message = `Відповідь від ${notification.answer.friendId}: ${notification.answer.content}`;
-        } else if (notification.question) {
-          // Якщо це запит на допомогу
-          message = `Запит на допомогу від ${notification.question.friendId}`;
-        }*/
-
-        return {
-          typeId,
-          date,
-          questionId,
-          answerId,
-        };
-      });
+      const formattedNotifications = await Promise.all(
+        notifications.map(async (notification) => {
+          await notification.load('type');
+      
+          const typeId = notification.typeId;
+          const typeName = notification.type?.name; 
+          const date = notification.createdAt;
+          const requestId = notification.questionId;
+          const answerId = notification.answerId;
+      
+          return {
+            typeId,
+            typeName, 
+            date,
+            requestId,
+            answerId,
+          };
+        })
+      );
 
       return response.status(200).json(formattedNotifications);
     } catch (error) {
