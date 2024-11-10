@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Question from 'App/Models/Question'
-import CategoryInSet from 'App/Models/CategoryInSet';
+/*import CategoryInSet from 'App/Models/CategoryInSet';
 import Set from 'App/Models/Set'
 import Favourite from 'App/Models/Favorite';
 
@@ -8,7 +8,7 @@ import Favourite from 'App/Models/Favorite';
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import ExcelJS from 'exceljs'
 
-import fs from 'fs'
+import fs from 'fs'*/
 
 export default class QuestionsController {
   /**
