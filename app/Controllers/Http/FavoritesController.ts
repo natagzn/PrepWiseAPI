@@ -188,7 +188,7 @@ export default class FavouritesController {
 
 
   
-  public async addResourceToFavourites({ auth, request, response }: HttpContextContract) {
+  /*public async addResourceToFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
       const { resourceId } = request.only(['resourceId'])
@@ -202,7 +202,7 @@ export default class FavouritesController {
     } catch (error) {
       return response.status(500).json({ message: 'Failed to add resource to favourites', error })
     }
-  }
+  }*/
 
 
   /**
@@ -231,7 +231,7 @@ export default class FavouritesController {
    *       500:
    *         description: Failed to remove resource from favourites
    */
-  public async removeResourceFromFavourites({ auth, request, response }: HttpContextContract) {
+  /*public async removeResourceFromFavourites({ auth, request, response }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
       const { resourceId } = request.only(['resourceId'])
@@ -250,7 +250,7 @@ export default class FavouritesController {
     } catch (error) {
       return response.status(500).json({ message: 'Failed to remove resource from favourites', error })
     }
-  }
+  }*/
 
 
 

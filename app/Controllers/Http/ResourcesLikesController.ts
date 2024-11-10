@@ -1,6 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import ResourceLike from 'App/Models/ResourceLike';
-import Favorite from 'App/Models/Favorite';
+//import Favorite from 'App/Models/Favorite';
 
 
 export default class ResourcesLikesController {
@@ -66,7 +66,7 @@ export default class ResourcesLikesController {
         }
       );
 
-      if(isLiked){
+      /*if(isLiked){
         const favourite = await Favorite.create({
           userId: user.userId,
           resourceId
@@ -83,7 +83,7 @@ export default class ResourcesLikesController {
         return
       }
       await favourite.delete()
-      }
+      }*/
 
 
       
@@ -203,7 +203,7 @@ export default class ResourcesLikesController {
       await resourceLike.save();
 
 
-      if(!isLiked){
+      /*if(!isLiked){
         const favourite = await Favorite.query()
         .where('userId', user.userId)
         .andWhere('resourceId', params.resourceId)
@@ -220,7 +220,7 @@ export default class ResourcesLikesController {
         })
       
         return response.status(201).json({ message: 'Like added successfully', resourceLike, favourite });
-      }
+      }*/
       
       return response.status(200).json({ message: 'Like updated successfully', resourceLike });
     } catch (error) {
@@ -263,7 +263,7 @@ export default class ResourcesLikesController {
 
 
 
-      const favourite = await Favorite.query()
+      /*const favourite = await Favorite.query()
         .where('userId', user.userId)
         .andWhere('resourceId', params.resourceId)
         .first()
@@ -272,7 +272,7 @@ export default class ResourcesLikesController {
         return response.status(404).json({ message: 'Favourite resource not found' })
       }
 
-      await favourite.delete()
+      await favourite.delete()*/
 
       return response.status(200).json({ message: 'Like removed successfully' });
     } catch (error) {
