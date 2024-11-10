@@ -54,7 +54,7 @@ Route.group(() => {
     Route.put('/questions/:id', 'QuestionsController.update')
     Route.delete('/questions/:id', 'QuestionsController.delete')  
     
-    Route.get('/questions-export', 'QuestionsController.export')  
+    Route.get('/questions-export-word/:path/:setId', 'QuestionsController.export')  
     Route.get('/questions-export-excel', 'QuestionsController.exportToExcel')  
 
 
@@ -122,9 +122,11 @@ Route.group(() => {
     Route.put('/resources/:id', 'ResourcesController.update')      // Оновлення ресурсу
     Route.delete('/resources/:id', 'ResourcesController.delete')
 
-    Route.delete('/resources-admin/:id', 'ResourcesController.delete')
 
   }).middleware("auth:api")
+
+  Route.delete('/resources-admin/:id', 'ResourcesController.delete')
+
 }).prefix("/api");
 
 Route.group(() => {
