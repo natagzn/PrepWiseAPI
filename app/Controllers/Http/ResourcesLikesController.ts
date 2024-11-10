@@ -71,9 +71,22 @@ export default class ResourcesLikesController {
           userId: user.userId,
           resourceId
         })
-      
+          
         return response.status(201).json({ message: 'Like added successfully', resourceLike, favourite });
+      }else{
+      const favourite = await Favorite.query()
+      .where('userId', user.userId)
+      .andWhere('resourceId', resourceId)
+      .first()
+
+      if (!favourite) {
+        return
       }
+      await favourite.delete()
+      }
+
+
+      
       return response.status(201).json({ message: 'DisLike added successfully', resourceLike });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to add like', error });
