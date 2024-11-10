@@ -2,7 +2,6 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import RequestForHelp from 'App/Models/RequestForHelp'
 import HelpAnswer from 'App/Models/HelpAnswer'
 import Notification from 'App/Models/Notification'
-import TypesNotification from 'App/Models/TypesNotification'
 
 import { DateTime } from 'luxon'
 
