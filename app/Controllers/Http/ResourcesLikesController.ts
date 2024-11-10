@@ -1,6 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import ResourceLike from 'App/Models/ResourceLike';
-//import Favorite from 'App/Models/Favorite';
+import Favorite from 'App/Models/Favorite';
 
 
 export default class ResourcesLikesController {
@@ -66,7 +66,7 @@ export default class ResourcesLikesController {
         }
       );
 
-      /*if(isLiked){
+      if(isLiked){
         const favourite = await Favorite.create({
           userId: user.userId,
           resourceId
@@ -80,13 +80,10 @@ export default class ResourcesLikesController {
       .first()
 
       if (!favourite) {
-        return
+        return response.status(201).json({ message: 'DisLike added successfully', resourceLike });
       }
       await favourite.delete()
-      }*/
-
-
-      
+      }
       return response.status(201).json({ message: 'DisLike added successfully', resourceLike });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to add like', error });
@@ -203,7 +200,7 @@ export default class ResourcesLikesController {
       await resourceLike.save();
 
 
-      /*if(!isLiked){
+      if(!isLiked){
         const favourite = await Favorite.query()
         .where('userId', user.userId)
         .andWhere('resourceId', params.resourceId)
@@ -220,7 +217,7 @@ export default class ResourcesLikesController {
         })
       
         return response.status(201).json({ message: 'Like added successfully', resourceLike, favourite });
-      }*/
+      }
       
       return response.status(200).json({ message: 'Like updated successfully', resourceLike });
     } catch (error) {
@@ -231,7 +228,7 @@ export default class ResourcesLikesController {
 
   /**
    * @swagger
-   * /api/resources/{resourceId}/likes:
+   * /api/resources-likes/{resourceId}:
    *   delete:
    *     summary: Remove a like from a resource
    *     tags: [Resources]
@@ -259,21 +256,20 @@ export default class ResourcesLikesController {
         .where('resourceId', params.resourceId)
         .firstOrFail();
 
+      if(resourceLike.like){
+          const favourite = await Favorite.query()
+            .where('userId', user.userId)
+            .andWhere('resourceId', params.resourceId)
+            .first()
+
+          if (!favourite) {
+            return response.status(404).json({ message: 'Favourite resource not found' })
+          }
+        await favourite.delete()
+      }
       await resourceLike.delete();
 
-
-
-      /*const favourite = await Favorite.query()
-        .where('userId', user.userId)
-        .andWhere('resourceId', params.resourceId)
-        .first()
-
-      if (!favourite) {
-        return response.status(404).json({ message: 'Favourite resource not found' })
-      }
-
-      await favourite.delete()*/
-
+      
       return response.status(200).json({ message: 'Like removed successfully' });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to remove like', error });
