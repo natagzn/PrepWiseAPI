@@ -8,7 +8,7 @@ import { DateTime } from 'luxon'
 export default class RequestForHelpController {
   /**
    * @swagger
-   * /api/requests-for-help:
+   * /api/request-for-help:
    *   post:
    *     summary: Create a new request for help
    *     tags: [RequestsForHelp]
