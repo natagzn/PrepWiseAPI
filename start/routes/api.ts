@@ -125,7 +125,7 @@ Route.group(() => {
 
   }).middleware("auth:api")
 
-  Route.delete('/resources-admin/:id', 'ResourcesController.delete')
+  Route.delete('/resources-admin/:id', 'ResourcesController.deleteAdmin')
 
 }).prefix("/api");
 
