@@ -1,6 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Question from 'App/Models/Question'
-
+import CategoryInSet from 'App/Models/CategoryInSet';
+import Set from 'App/Models/Set'
+import Favourite from 'App/Models/Favorite';
 
 //import PDFDocument from 'pdfkit'
 import { Document, Packer, Paragraph, TextRun } from 'docx'
@@ -293,12 +295,145 @@ export default class QuestionsController {
     }
   }*/
 
-
-
-  public async export({ response }: HttpContextContract) {
+  /*public async export({auth, params, response }: HttpContextContract) {
     try {
       // Отримання всіх питань з бази даних
       const questions = await Question.query()
+
+
+      const user = await auth.authenticate();
+
+      // Отримання сету за його ID
+      const set = await Set.query()
+        .where('QuestionSet_id', params.id)
+        .preload('user') // Загрузка автора сету
+        .preload('level') // Загрузка рівня сету
+        .preload('questions') // Загрузка питань сету
+        .firstOrFail();
+
+      // Отримуємо категорії, які відносяться до цього сету
+      const categories = await CategoryInSet.query()
+        .where('questionSetId', set.QuestionSet_id)
+        .preload('category') // Загрузка категорії
+        .exec();
+
+      // Перевірка, чи вподобаний сет поточним користувачем
+      const isFavourite = await Favourite.query()
+        .where('questionListId', set.QuestionSet_id)
+        .andWhere('userId', user.userId)
+        .first();
+
+
+
+        const answer = {
+          name: set.name,
+        level: {
+          levelId: set.levelId,
+          name: set.level?.name // Ім'я рівня
+        },
+        categories: categories.map(cat => ({
+          id: cat.categoryId,
+          name: cat.category?.name // Ім'я категорії
+        })),
+        author: {
+          username: set.user?.username // Ім'я автора
+        },
+        createdAt: set.createdAt,
+        questions: set.questions, // Масив питань
+        access: set.access ? 'public' : 'private', // Тип доступу
+        isFavourite: !!isFavourite // Чи вподобаний сет
+        }
+
+
+
+
+        const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun } = require("docx");
+
+        const doc = new Document({
+          sections: [
+            {
+              properties: {},
+              children: [
+                // Основна інформація
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: ${answer.name}, bold: true }),
+                  ],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: `Рівень: Team lead` }),
+                  ],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: `Категорії: React` }),
+                  ],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: `Автор: soonnias` }),
+                  ],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: `Доступ: public` }),
+                  ],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: `Улюблене: так` }),
+                  ],
+                }),
+        
+                // Додавання таблиці з питаннями
+                new Table({
+                  rows: [
+                    // Заголовок таблиці
+                    new TableRow({
+                      children: [
+                        new TableCell({ children: [new Paragraph("ID Питання")] }),
+                        new TableCell({ children: [new Paragraph("Статус")] }),
+                        new TableCell({ children: [new Paragraph("Вміст")] }),
+                        new TableCell({ children: [new Paragraph("Відповідь")] }),
+                        new TableCell({ children: [new Paragraph("Дата створення")] }),
+                        new TableCell({ children: [new Paragraph("Дата оновлення")] }),
+                      ],
+                    }),
+                    // Дані для кожного питання
+                    ...questions.map((question) =>
+                      new TableRow({
+                        children: [
+                          new TableCell({ children: [new Paragraph(question.question_id.toString())] }),
+                          new TableCell({
+                            children: [
+                              new Paragraph(question.status ? "Активний" : "Неактивний"),
+                            ],
+                          }),
+                          new TableCell({ children: [new Paragraph(question.content)] }),
+                          new TableCell({ children: [new Paragraph(question.answer || "")] }),
+                          new TableCell({
+                            children: [new Paragraph(new Date(question.created_at).toLocaleString())],
+                          }),
+                          new TableCell({
+                            children: [new Paragraph(new Date(question.updated_at).toLocaleString())],
+                          }),
+                        ],
+                      })
+                    ),
+                  ],
+                }),
+              ],
+            },
+          ],
+        });
+        
+        // Збереження документу
+        Packer.toBuffer(doc).then((buffer) => {
+          require("fs").writeFileSync("Document.docx", buffer);
+        });
+        
+
 
       // Створення документа Word
       const doc = new Document({
@@ -330,7 +465,7 @@ export default class QuestionsController {
 
       // Генерація файлу Word
       const buffer = await Packer.toBuffer(doc)
-      const filePath = 'D:/questions-export.docx' // Збереження на диск C
+      const filePath = params.path // Збереження на диск C
 
       // Запис файлу на диск
       fs.writeFileSync(filePath, buffer)
@@ -397,5 +532,5 @@ export default class QuestionsController {
       console.error('Error generating Excel document:', error)
       return response.status(500).json({ message: 'Error generating Excel document', error })
     }
-  }
+  }*/
 }

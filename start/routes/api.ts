@@ -117,9 +117,9 @@ Route.group(() => {
 Route.group(() => {
   Route.group(() => {
     Route.post('/resources', 'ResourcesController.create')         
-    Route.get('/resources', 'ResourcesController.index')           // Отримання всіх ресурсів
-    Route.get('/resources/:id', 'ResourcesController.show')        // Отримання конкретного ресурсу
-    Route.put('/resources/:id', 'ResourcesController.update')      // Оновлення ресурсу
+    Route.get('/resources', 'ResourcesController.index')           
+    Route.get('/resources/:id', 'ResourcesController.show')        
+    Route.put('/resources/:id', 'ResourcesController.update')      
     Route.delete('/resources/:id', 'ResourcesController.delete')
 
 
