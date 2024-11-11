@@ -844,13 +844,15 @@ if (isSubscribedToTarget) {
       return response.status(404).json({ message: 'User not found' })
     }*/
 
-    const resetCode = Math.floor(1000 + Math.random() * 9000).toString()
+    const resetCodeNum = Math.floor(1000 + Math.random() * 9000)
+    const resetCode = resetCodeNum.toString()
 
-    /*await ResetCode.create({
-      userId: user.userId,
+    await ResetCode.create({
+      userId: resetCodeNum,
       resetCode: resetCode,
       expiresAt: DateTime.local().plus({ minutes: 10 }), 
-    })*/
+    })
+
 
     // Надсилання коду на пошту користувача
     await confirmEmail(email, resetCode)
@@ -890,16 +892,16 @@ if (isSubscribedToTarget) {
  *         description: Користувач з вказаною електронною поштою не знайдений
  */
   public async confirmationEmail({ request, response }) {
-    const { email, resetCode } = request.all()
+    const { resetCode } = request.all()
 
-    const user = await User.query().where('email', email).first()
+    /*const user = await User.query().where('email', email).first()
 
     if (!user) {
       return response.status(404).json({ message: 'User not found' })
-    }
+    }*/
 
     const storedCode = await ResetCode.query()
-      .where('user_id', user.userId)
+      .where('user_id', resetCode)
       .andWhere('reset_code', resetCode)
       .first()
 
