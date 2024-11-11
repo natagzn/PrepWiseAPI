@@ -82,7 +82,7 @@ export default class HelpAnswersController {
 
   /**
    * @swagger
-   * /api/help-answers/{id}:
+   * /api/help-answers-for-questions/{id}:
    *   get:
    *     summary: Retrieve help answers for a specific question
    *     tags: [HelpAnswers]
@@ -152,6 +152,118 @@ export default class HelpAnswersController {
     })
       } catch (error) {
       return response.internalServerError({ message: 'Failed to retrieve question and help answers', error: error.message })
+    }
+  }
+
+
+
+/**
+ * @swagger
+ * /api/help-answers/{id}:
+ *   get:
+ *     summary: Get HelpAnswer by ID
+ *     description: Отримує запис HelpAnswer за його ID разом зі зв'язаними даними friend і question.
+ *     tags:
+ *       - HelpAnswers
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Унікальний ідентифікатор HelpAnswer
+ *     responses:
+ *       200:
+ *         description: Успішно отримано запис HelpAnswer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     friendId:
+ *                       type: integer
+ *                       example: 2
+ *                     questionId:
+ *                       type: integer
+ *                       example: 3
+ *                     content:
+ *                       type: string
+ *                       example: "This is the answer content"
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-11-11"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-11-11T12:34:56Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-11-11T12:34:56Z"
+ *                     friend:
+ *                       type: object
+ *                       description: Зв'язаний об'єкт Friend
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         name:
+ *                           type: string
+ *                     question:
+ *                       type: object
+ *                       description: Зв'язаний об'єкт Question
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *       404:
+ *         description: HelpAnswer не знайдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "HelpAnswer not found"
+ *       500:
+ *         description: Виникла помилка при отриманні HelpAnswer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to fetch HelpAnswer"
+ *                 error:
+ *                   type: string
+ */
+
+  public async get({ params, response }: HttpContextContract) {
+    try {
+      // Пошук HelpAnswer за ID з підвантаженням зв'язаних friend та question
+      const helpAnswer = await HelpAnswer.query()
+        .where('id', params.id)
+        .preload('friend')    // Підвантаження зв'язку з Friend
+        .preload('question')  // Підвантаження зв'язку з Question
+        .first()
+
+      if (!helpAnswer) {
+        return response.status(404).json({ message: 'HelpAnswer not found' })
+      }
+
+      return response.status(200).json({ data: helpAnswer })
+    } catch (error) {
+      console.error('Error fetching HelpAnswer:', error)
+      return response.status(500).json({ message: 'Failed to fetch HelpAnswer', error: error.message })
     }
   }
 }

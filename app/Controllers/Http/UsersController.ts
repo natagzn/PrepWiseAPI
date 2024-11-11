@@ -111,33 +111,7 @@ export default class UsersController {
   }
 
 
-  /**
-   * @swagger
-   * /api/profile/password:
-   *   put:
-   *     summary: Change user password
-   *     tags: [Users]
-   *     security:
-   *       - bearerAuth: []
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               currentPassword:
-   *                 type: string
-   *                 description: Current password of the user
-   *               newPassword:
-   *                 type: string
-   *                 description: New password of the user
-   *     responses:
-   *       200:
-   *         description: Password changed successfully
-   *       401:
-   *         description: Incorrect current password
-   */
+  
   public async changePassword({ auth, request, response }: HttpContextContract) {
     // Валідація запиту
     const changePasswordSchema = schema.create({

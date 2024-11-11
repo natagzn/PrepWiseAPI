@@ -54,7 +54,7 @@ Route.group(() => {
     Route.put('/questions/:id', 'QuestionsController.update')
     Route.delete('/questions/:id', 'QuestionsController.delete')  
     
-    Route.get('/questions-export-word/:path/:setId', 'QuestionsController.export')  
+    Route.get('/questions-export-word/:path/:setId', 'QuestionsController.exportSetToWord')  
     Route.get('/questions-export-excel', 'QuestionsController.exportToExcel')  
 
 
@@ -182,8 +182,14 @@ Route.group(() => {
 Route.group(() => {
   Route.group(() => {
     Route.post('/request-for-help', 'RequestForHelpsController.create')
+    Route.get('/request-for-help/:id', 'RequestForHelpsController.get')
+
+
     Route.post('/help-answers', 'HelpAnswersController.create')
-    Route.get('/help-answers/:id', 'HelpAnswersController.show')
+    Route.get('/help-answers-for-questions/:id', 'HelpAnswersController.show')
+
+    Route.get('/help-answers/:id', 'HelpAnswersController.get')
+
   }).middleware("auth:api")
 }).prefix("/api");
 

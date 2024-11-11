@@ -109,4 +109,109 @@ export default class RequestForHelpController {
       return response.internalServerError({ message: 'Failed to create request for help', error: error.message })
     }
   }
+
+
+/**
+ * @swagger
+ * /api/request-for-help/{id}:
+ *   get:
+ *     summary: Get RequestForHelp by ID
+ *     description: Отримує запис RequestForHelp за його ID разом зі зв'язаними даними friend і question.
+ *     tags:
+ *       - RequestForHelp
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Унікальний ідентифікатор RequestForHelp
+ *     responses:
+ *       200:
+ *         description: Успішно отримано запис RequestForHelp
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     friendId:
+ *                       type: integer
+ *                       example: 2
+ *                     questionId:
+ *                       type: integer
+ *                       example: 3
+ *                     date:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-11-11T12:34:56Z"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-11-11T12:34:56Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-11-11T12:34:56Z"
+ *                     friend:
+ *                       type: object
+ *                       description: Зв'язаний об'єкт Friend
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         name:
+ *                           type: string
+ *                     question:
+ *                       type: object
+ *                       description: Зв'язаний об'єкт Question
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *       404:
+ *         description: RequestForHelp не знайдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "RequestForHelp not found"
+ *       500:
+ *         description: Виникла помилка при отриманні RequestForHelp
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to fetch RequestForHelp"
+ *                 error:
+ *                   type: string
+ */
+
+  public async get({ params, response }: HttpContextContract) {
+    try {
+      const requestForHelp = await RequestForHelp.query()
+        .where('id', params.id)
+        .preload('friend')
+        .preload('question')
+        .firstOrFail()
+
+      return response.status(200).json({
+        data: requestForHelp,
+      })
+    } catch (error) {
+      console.error('Error fetching RequestForHelp:', error)
+      return response.status(404).json({ message: 'RequestForHelp not found' })
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
-import Friend from './People'
+import Friend from './User'
 import Question from './Question'
 
 export default class HelpAnswer extends BaseModel {

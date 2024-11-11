@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Question from 'App/Models/Question'
-/*import CategoryInSet from 'App/Models/CategoryInSet';
+import CategoryInSet from 'App/Models/CategoryInSet';
 import Set from 'App/Models/Set'
 import Favourite from 'App/Models/Favorite';
 
@@ -8,7 +8,13 @@ import Favourite from 'App/Models/Favorite';
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import ExcelJS from 'exceljs'
 
-import fs from 'fs'*/
+import fs from 'fs'
+
+import { Table, TableRow, TableCell } from 'docx';
+
+
+
+
 
 export default class QuestionsController {
   /**
@@ -295,7 +301,7 @@ export default class QuestionsController {
     }
   }*/
 
-  /*public async export({auth, params, response }: HttpContextContract) {
+  public async export({auth, params, response }: HttpContextContract) {
     try {
       // Отримання всіх питань з бази даних
       const questions = await Question.query()
@@ -325,114 +331,11 @@ export default class QuestionsController {
 
 
 
-        const answer = {
-          name: set.name,
-        level: {
-          levelId: set.levelId,
-          name: set.level?.name // Ім'я рівня
-        },
-        categories: categories.map(cat => ({
-          id: cat.categoryId,
-          name: cat.category?.name // Ім'я категорії
-        })),
-        author: {
-          username: set.user?.username // Ім'я автора
-        },
-        createdAt: set.createdAt,
-        questions: set.questions, // Масив питань
-        access: set.access ? 'public' : 'private', // Тип доступу
-        isFavourite: !!isFavourite // Чи вподобаний сет
-        }
 
 
 
 
-        const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun } = require("docx");
 
-        const doc = new Document({
-          sections: [
-            {
-              properties: {},
-              children: [
-                // Основна інформація
-                new Paragraph({
-                  children: [
-                    new TextRun({ text: ${answer.name}, bold: true }),
-                  ],
-                }),
-                new Paragraph({
-                  children: [
-                    new TextRun({ text: `Рівень: Team lead` }),
-                  ],
-                }),
-                new Paragraph({
-                  children: [
-                    new TextRun({ text: `Категорії: React` }),
-                  ],
-                }),
-                new Paragraph({
-                  children: [
-                    new TextRun({ text: `Автор: soonnias` }),
-                  ],
-                }),
-                new Paragraph({
-                  children: [
-                    new TextRun({ text: `Доступ: public` }),
-                  ],
-                }),
-                new Paragraph({
-                  children: [
-                    new TextRun({ text: `Улюблене: так` }),
-                  ],
-                }),
-        
-                // Додавання таблиці з питаннями
-                new Table({
-                  rows: [
-                    // Заголовок таблиці
-                    new TableRow({
-                      children: [
-                        new TableCell({ children: [new Paragraph("ID Питання")] }),
-                        new TableCell({ children: [new Paragraph("Статус")] }),
-                        new TableCell({ children: [new Paragraph("Вміст")] }),
-                        new TableCell({ children: [new Paragraph("Відповідь")] }),
-                        new TableCell({ children: [new Paragraph("Дата створення")] }),
-                        new TableCell({ children: [new Paragraph("Дата оновлення")] }),
-                      ],
-                    }),
-                    // Дані для кожного питання
-                    ...questions.map((question) =>
-                      new TableRow({
-                        children: [
-                          new TableCell({ children: [new Paragraph(question.question_id.toString())] }),
-                          new TableCell({
-                            children: [
-                              new Paragraph(question.status ? "Активний" : "Неактивний"),
-                            ],
-                          }),
-                          new TableCell({ children: [new Paragraph(question.content)] }),
-                          new TableCell({ children: [new Paragraph(question.answer || "")] }),
-                          new TableCell({
-                            children: [new Paragraph(new Date(question.created_at).toLocaleString())],
-                          }),
-                          new TableCell({
-                            children: [new Paragraph(new Date(question.updated_at).toLocaleString())],
-                          }),
-                        ],
-                      })
-                    ),
-                  ],
-                }),
-              ],
-            },
-          ],
-        });
-        
-        // Збереження документу
-        Packer.toBuffer(doc).then((buffer) => {
-          require("fs").writeFileSync("Document.docx", buffer);
-        });
-        
 
 
       // Створення документа Word
@@ -487,6 +390,122 @@ export default class QuestionsController {
 
 
 
+  public async exportSetToWord({ params, auth, response }: HttpContextContract) {
+    try {
+      const user = await auth.authenticate();
+  
+      // Отримання сету та пов'язаної інформації
+      const set = await Set.query()
+        .where('QuestionSet_id', params.id)
+        .preload('user')
+        .preload('level')
+        .preload('questions')
+        .firstOrFail();
+  
+      const categories = await CategoryInSet.query()
+        .where('questionSetId', set.QuestionSet_id)
+        .preload('category')
+        .exec();
+  
+      const isFavourite = await Favourite.query()
+        .where('questionListId', set.QuestionSet_id)
+        .andWhere('userId', user.userId)
+        .first();
+  
+      // Формування документа
+      const doc = new Document({
+        sections: [
+          {
+            properties: {},
+            children: [
+              new Paragraph({
+                children: [new TextRun({ text: `Назва сету: ${set.name}`, bold: true, size: 28 })],
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: `Рівень: ${set.level?.name || ''}`, size: 24 })],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Категорії: ${categories.map(cat => cat.category?.name).join(', ')}`,
+                    size: 24,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: `Автор: ${set.user?.username || ''}`, size: 24 })],
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: `Доступ: ${set.access ? 'публічний' : 'приватний'}`, size: 24 })],
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: `Вподобаний: ${isFavourite ? 'Так' : 'Ні'}`, size: 24 })],
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: '\nПитання:', bold: true, size: 28 })],
+              }),
+  
+              // Створення таблиці з питаннями
+              new Table({
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({ children: [new Paragraph('ID Питання')] }),
+                      new TableCell({ children: [new Paragraph('Статус')] }),
+                      new TableCell({ children: [new Paragraph('Вміст')] }),
+                      new TableCell({ children: [new Paragraph('Відповідь')] }),
+                      new TableCell({ children: [new Paragraph('Дата створення')] }),
+                      new TableCell({ children: [new Paragraph('Дата оновлення')] }),
+                    ],
+                  }),
+                  // Додавання даних про питання
+                  ...set.questions.map(question =>
+                    new TableRow({
+                      children: [
+                        new TableCell({ children: [new Paragraph(question.questionId.toString())] }),
+                        new TableCell({ children: [new Paragraph(question.status ? 'Активний' : 'Неактивний')] }),
+                        new TableCell({ children: [new Paragraph(question.content)] }),
+                        new TableCell({ children: [new Paragraph(question.answer || '')] }),
+                        new TableCell({
+                          children: [
+                            new Paragraph(new Date(question.createdAt.toJSDate()).toLocaleString()),
+                          ],
+                        }),
+                        new TableCell({
+                          children: [
+                            new Paragraph(new Date(question.updatedAt.toJSDate()).toLocaleString()),
+                          ],
+                        }),
+                      ],
+                    })
+                  ),
+                ],
+              }),
+            ],
+          },
+        ],
+      });
+  
+      // Збереження документа
+      // Генерація файлу Word
+      const buffer = await Packer.toBuffer(doc)
+      const filePath = params.path // Збереження на диск C
+
+      // Запис файлу на диск
+      fs.writeFileSync(filePath, buffer)
+
+      // Відправка документа для завантаження
+      response.header(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      )
+      response.header('Content-Disposition', 'attachment; filename=questions-export.docx')
+    } catch (error) {
+      return response.status(500).json({ message: 'Не вдалося експортувати сет', error: error.message || error });
+    }
+  }
+
+
   public async exportToExcel({ response }: HttpContextContract) {
     try {
       // Отримання всіх питань з бази даних
@@ -532,5 +551,5 @@ export default class QuestionsController {
       console.error('Error generating Excel document:', error)
       return response.status(500).json({ message: 'Error generating Excel document', error })
     }
-  }*/
+  }
 }
