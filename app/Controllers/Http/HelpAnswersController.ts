@@ -251,10 +251,12 @@ export default class HelpAnswersController {
     try {
       // Пошук HelpAnswer за ID з підвантаженням зв'язаних friend та question
       const helpAnswer = await HelpAnswer.query()
-        .where('id', params.id)
-        .preload('friend')    // Підвантаження зв'язку з Friend
-        .preload('question')  // Підвантаження зв'язку з Question
-        .first()
+      .where('id', params.id)
+      .preload('question', (questionQuery) => {
+        questionQuery.preload('set')
+      })
+      .preload('friend')  // Також завантажуємо інформацію про друга, який надіслав запит
+      .first()
 
       if (!helpAnswer) {
         return response.status(404).json({ message: 'HelpAnswer not found' })

@@ -198,20 +198,31 @@ export default class RequestForHelpController {
  *                   type: string
  */
 
-  public async get({ params, response }: HttpContextContract) {
-    try {
-      const requestForHelp = await RequestForHelp.query()
-        .where('id', params.id)
-        .preload('friend')
-        .preload('question')
-        .firstOrFail()
-
-      return response.status(200).json({
-        data: requestForHelp,
+public async get({ params, response }) {
+  try {
+    const request = await RequestForHelp.query()
+      .where('id', params.id)
+      .preload('question', (questionQuery) => {
+        questionQuery.preload('set')
       })
-    } catch (error) {
-      console.error('Error fetching RequestForHelp:', error)
-      return response.status(404).json({ message: 'RequestForHelp not found' })
+      .preload('friend')  // Також завантажуємо інформацію про друга, який надіслав запит
+      .first()
+
+    if (!request) {
+      return response.status(404).json({
+        message: 'Request not found'
+      })
     }
+
+    return response.status(200).json({
+      status: 'success',
+      data: request
+    })
+  } catch (error) {
+    return response.status(500).json({
+      message: 'An error occurred while fetching the request',
+      error: error.message
+    })
   }
+}
 }
