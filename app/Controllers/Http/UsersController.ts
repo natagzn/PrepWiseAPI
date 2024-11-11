@@ -913,7 +913,7 @@ if (isSubscribedToTarget) {
 
 
     // Видалення коду з бази даних після використання
-    await storedCode.delete()
+    //await storedCode.delete()
 
     return response.status(200).json({ message: 'Email verification is successful' })
   }
