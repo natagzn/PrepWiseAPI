@@ -203,7 +203,9 @@ public async get({ params, response }) {
     const request = await RequestForHelp.query()
       .where('id', params.id)
       .preload('question', (questionQuery) => {
-        questionQuery.preload('set')
+        questionQuery.preload('set', (setQuery) => {
+          setQuery.preload('user')  // Завантажуємо інформацію про автора сету
+        })
       })
       .preload('friend')  // Також завантажуємо інформацію про друга, який надіслав запит
       .first()
