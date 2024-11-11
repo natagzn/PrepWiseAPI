@@ -1,9 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
-export default class ResetCode extends BaseModel {
-  public static table = 'codes'  // Додайте цей рядок
-
+export default class CodeForNewUser extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 

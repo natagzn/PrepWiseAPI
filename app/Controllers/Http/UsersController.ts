@@ -6,6 +6,8 @@ import Set from 'App/Models/Set'
 import Resource from 'App/Models/Resource'
 import People from 'App/Models/People'
 import ResetCode from 'App/Models/ResetCode'
+import CodeForNewUser from 'App/Models/CodeForNewUser'
+
 import { DateTime } from 'luxon'
 //import { sendResetPasswordEmail } from 'App/Utils/EmailService'  // Приклад функції для відправки email
 
@@ -847,7 +849,7 @@ if (isSubscribedToTarget) {
     const resetCodeNum = Math.floor(1000 + Math.random() * 9000)
     const resetCode = resetCodeNum.toString()
 
-    await ResetCode.create({
+    await CodeForNewUser.create({
       userId: resetCodeNum,
       resetCode: resetCode,
       expiresAt: DateTime.local().plus({ minutes: 10 }), 
@@ -900,7 +902,7 @@ if (isSubscribedToTarget) {
       return response.status(404).json({ message: 'User not found' })
     }*/
 
-    const storedCode = await ResetCode.query()
+    const storedCode = await CodeForNewUser.query()
       .where('user_id', resetCode)
       .andWhere('reset_code', resetCode)
       .first()
