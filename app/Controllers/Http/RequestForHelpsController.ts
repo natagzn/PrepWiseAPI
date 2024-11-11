@@ -118,7 +118,7 @@ export default class RequestForHelpController {
  *     summary: Get RequestForHelp by ID
  *     description: Отримує запис RequestForHelp за його ID разом зі зв'язаними даними friend і question.
  *     tags:
- *       - RequestForHelp
+ *       - RequestsForHelp
  *     parameters:
  *       - in: path
  *         name: id
