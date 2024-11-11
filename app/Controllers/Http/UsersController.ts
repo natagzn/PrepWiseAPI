@@ -839,21 +839,21 @@ if (isSubscribedToTarget) {
  */
   public async sendConfirmEmail({ request, response }) {
     const email = request.input('email')
-    const user = await User.query().where('email', email).first()
+    /*const user = await User.query().where('email', email).first()
     if (!user) {
       return response.status(404).json({ message: 'User not found' })
-    }
+    }*/
 
     const resetCode = Math.floor(1000 + Math.random() * 9000).toString()
 
-    await ResetCode.create({
+    /*await ResetCode.create({
       userId: user.userId,
       resetCode: resetCode,
       expiresAt: DateTime.local().plus({ minutes: 10 }), 
-    })
+    })*/
 
     // Надсилання коду на пошту користувача
-    await confirmEmail(user.email, resetCode)
+    await confirmEmail(email, resetCode)
 
     return response.status(200).json({ message: 'Reset code sent to your email' })
   }
