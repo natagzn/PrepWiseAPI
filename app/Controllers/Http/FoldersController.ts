@@ -154,27 +154,40 @@ export default class FoldersController {
   public async addSetToFolder({ params, request, response }: HttpContextContract) {
     try {
       const { setId } = request.only(['setId']) // Отримуємо ID набору з запиту
-
+  
       const folder = await Folder.findOrFail(params.id) // Знаходимо папку за ID
-
+  
+      // Перевірка, чи вже є цей набір у папці
+      const existingSetInFolder = await SetInFolder.query()
+        .where('setId', setId)
+        .andWhere('folderId', folder.folderId)
+        .first()
+  
+      if (existingSetInFolder) {
+        return response.status(400).json({
+          message: 'Set already exists in the folder',
+        })
+      }
+  
       // Створюємо запис у таблиці SetInFolder
       const setInFolder = await SetInFolder.create({
         setId,
         folderId: folder.folderId,
       })
-
+  
       return response.status(201).json({
         message: 'Set added to folder successfully',
         setInFolder,
       })
     } catch (error) {
       console.error('Error adding set to folder:', error) // Виводимо деталі помилки в консоль
-      return response.status(500).json({ 
-        message: 'Failed to add set to folder', 
-        error: error.message || 'Unknown error'  // Додаємо повідомлення помилки у відповідь
+      return response.status(500).json({
+        message: 'Failed to add set to folder',
+        error: error.message || 'Unknown error', // Додаємо повідомлення помилки у відповідь
       })
     }
   }
+  
   
 
 
