@@ -301,7 +301,7 @@ export default class QuestionsController {
     }
   }*/
 
-  public async export({auth, params, response }: HttpContextContract) {
+  /*public async export({auth, params, response }: HttpContextContract) {
     try {
       // Отримання всіх питань з бази даних
       const questions = await Question.query()
@@ -385,7 +385,7 @@ export default class QuestionsController {
       console.error('Error generating Word document:', error)
       return response.status(500).json({ message: 'Error generating Word document', error })
     }
-  }
+  }*/
 
 
 

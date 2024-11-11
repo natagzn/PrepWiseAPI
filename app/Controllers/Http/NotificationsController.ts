@@ -37,51 +37,35 @@ export default class NotificationsController {
 
   public async getHelpRequests({ response }: HttpContextContract) {
     try {
-      const requests = await RequestForHelp.query()
-        .preload('friend', (friendQuery) => {
-          friendQuery.preload('user')
-          friendQuery.preload('friendUser')
-        })
+      const requestForHelp = await RequestForHelp.query()
+        .preload('friend')
         .preload('question')
+        .firstOrFail()
 
-      const formattedRequests = requests.map((request) => ({
-        id: request.id,
-        from: request.friend.user, // Користувач, який відправив запит
-        to: request.friend.friendUser, // Користувач, якому направлений запит
-        question: request.question,
-        date: request.date,
-      }))
-
-      return response.status(200).json(formattedRequests)
+      return response.status(200).json({
+        data: requestForHelp,
+      })
     } catch (error) {
-      console.error(error)
-      return response.status(500).json({ message: 'Помилка при отриманні запитів на допомогу', error})
+      console.error('Error fetching RequestForHelp:', error)
+      return response.status(404).json({ message: 'RequestForHelp not found' })
     }
   }
 
   public async getHelpAnswers({ response }: HttpContextContract) {
-    try {
-      const answers = await HelpAnswer.query()
-        .preload('friend', (friendQuery) => {
-          friendQuery.preload('user')
-          friendQuery.preload('friendUser')
-        })
-        .preload('question')
+    const helpAnswer = await HelpAnswer.query()
+        .preload('friend')    // Підвантаження зв'язку з Friend
+        .preload('question')  // Підвантаження зв'язку з Question
+        .first()
 
-      const formattedAnswers = answers.map((answer) => ({
-        id: answer.id,
-        from: answer.friend.user, // Користувач, який відповів
-        to: answer.friend.friendUser, // Користувач, який отримав відповідь
-        question: answer.question,
-        content: answer.content,
-        date: answer.date,
-      }))
+      if (!helpAnswer) {
+        return response.status(404).json({ message: 'HelpAnswer not found' })
+      }
 
-      return response.status(200).json(formattedAnswers)
+      return response.status(200).json({ data: helpAnswer })
     } catch (error) {
-      console.error(error)
-      return response.status(500).json({ message: 'Помилка при отриманні відповідей на запити' })
-    }
+      console.error('Error fetching HelpAnswer:', error)
+      //return response.status(500).json({ message: 'Failed to fetch HelpAnswer', error: error.message })
+    
   }
 
 
