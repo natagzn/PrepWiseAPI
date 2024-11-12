@@ -3,6 +3,10 @@ import SharedSet from 'App/Models/SharedSet'
 import Database from '@ioc:Adonis/Lucid/Database';
 import SetModel from 'App/Models/Set'
 import Category from 'App/Models/Category'
+import Subscription from 'App/Models/Subscription'
+import { DateTime } from 'luxon'
+
+
 
 
 export default class SharedSetsController {
@@ -284,10 +288,6 @@ export default class SharedSetsController {
   }
 
 
-
-
-
-
 /**
  * @swagger
  * /api/shared-sets-all:
@@ -469,8 +469,6 @@ public async getSharedSets({ auth, response }: HttpContextContract) {
 
 
 
-
-
 /**
  * @swagger
  * /api/shared-sets-by-user:
@@ -642,13 +640,6 @@ public async getSetsSharedByCurrentUser({ auth, response }: HttpContextContract)
 
 
 
-
-
-
-
-
-
-
 /**
  * @swagger
  * /api/shared-sets-author/{id}:
@@ -763,6 +754,76 @@ public async checkUserAccess({ auth, params, response }: HttpContextContract) {
   } catch (error) {
     console.error('Error checking user access:', error);
     return response.status(500).json({ message: 'Error checking user access', error });
+  }
+}
+
+
+
+/**
+ * @swagger
+ * /api/hared-sets-premium:
+ *   get:
+ *     summary: Check if the user's subscription is still active and clean up shared sets if expired.
+ *     tags:
+ *       - Subscription
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Subscription status checked and cleaned up if expired.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Expired subscription. Shared sets cleaned up."
+ *       401:
+ *         description: Unauthorized - User needs to be authenticated.
+ *       500:
+ *         description: Failed to check subscription status or clean up shared sets.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed"
+ *                 error:
+ *                   type: string
+ *                   example: "Error message"
+ */
+
+public async ifPremium({ auth }: HttpContextContract){
+  try {
+    const user = await auth.authenticate();
+
+    const premiumUser = await Subscription.query()
+    .where('user_id', user.userId)
+    .orderBy('created_at', 'desc')
+    .first()
+
+    if(premiumUser?.date){
+      if(premiumUser.date < DateTime.local()){
+        const userSetIds = (await SetModel.query()
+        .where('user_id', user.userId)
+        .select('question_set_id')
+        ).map((set) => set.QuestionSet_id)  // Отримуємо масив ідентифікаторів сетів, автором яких є користувач
+
+        // Видаляємо записи з `SharedSet` для знайдених `setId`
+        await SharedSet.query()
+          .whereIn('setId', userSetIds)
+          .delete()
+        
+        return { message: 'Expired subscription. Shared sets cleaned up.' }
+      }
+    }
+    
+  } catch (error) {
+    return { message: 'Failed', error }
+
   }
 }
 }

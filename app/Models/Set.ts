@@ -6,6 +6,8 @@ import Question from './Question'
 
 
 export default class Set extends BaseModel {
+  //public static table = 'sets';  // Замість 'friends'
+
   @column({ isPrimary: true })
   public QuestionSet_id: number
 

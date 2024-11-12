@@ -134,7 +134,7 @@ export default class AuthController {
       await Set.create({
         userId: user.userId,
         name: 'Default Set',
-        access: true,
+        access: false,
         data: DateTime.local(),
         levelId: firstLevelId,  // Set a default level if applicable
         shared: false

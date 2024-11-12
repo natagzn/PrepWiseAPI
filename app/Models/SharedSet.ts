@@ -4,6 +4,8 @@ import User from './User'
 import Set from './Set'
 
 export default class SharedSet extends BaseModel {
+  //public static table = 'shared_sets';  // Замість 'friends'
+
   @column({ isPrimary: true })
   public id: number
 
