@@ -298,19 +298,19 @@ export default class FavouritesController {
       // Отримання обраних папок
       const folders = await Folder.query()
         .whereIn('folderId', (query) =>
-          query.from('favourites').select('folder_id').where('user_id', user.userId)
+          query.from('favourites').select('folder_id').where('user_id', user.userId).orderBy('created_at', 'desc')
         )
 
       // Отримання обраних сетів
       const sets = await Set.query()
         .whereIn('QuestionSet_id', (query) =>
-          query.from('favourites').select('question_list_id').where('user_id', user.userId)
+          query.from('favourites').select('question_list_id').where('user_id', user.userId).orderBy('created_at', 'desc')
         )
 
       // Отримання обраних ресурсів
       const resources = await Resource.query()
         .whereIn('resourceId', (query) =>
-          query.from('favourites').select('resource_id').where('user_id', user.userId)
+          query.from('favourites').select('resource_id').where('user_id', user.userId).orderBy('created_at', 'desc')
         )
 
       return response.status(200).json({

@@ -489,6 +489,7 @@ export default class UsersController {
       const publicSets = await Set.query()
         .where('userId', userId)
         .where('access', true) // фільтрація публічних сетів
+        .orderBy('created_at', 'desc')
       /*const privateSets = await Set.query()
         .where('userId', userId)
         .where('access', false) // фільтрація приватних сетів
@@ -496,6 +497,7 @@ export default class UsersController {
       // Завантаження ресурсів користувача
       const resources = await Resource.query()
         .where('userId', userId)
+        .orderBy('created_at', 'desc')
 
       // Формування кінцевої відповіді
       const userInfo = {

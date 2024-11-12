@@ -70,7 +70,7 @@ export default class ResourcesController {
     try {
       const user = await auth.authenticate()
 
-      const resources = await Resource.query().where('userId', user.userId)
+      const resources = await Resource.query().where('userId', user.userId).orderBy('created_at', 'desc')
       return response.status(200).json(resources)
     } catch (error) {
       return response.status(500).json({ message: 'Failed to retrieve resources', error })

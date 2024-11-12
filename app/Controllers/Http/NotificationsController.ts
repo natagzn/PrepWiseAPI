@@ -132,12 +132,14 @@ export default class NotificationsController {
                 .from('help_answers')
                 .whereRaw('help_answers.id = notifications.answer_id')
                 .where('help_answers.friend_id', userId)
+                .orderBy('created_at', 'desc')
             )
             .orWhereExists((subquery) =>
               subquery
                 .from('request_for_helps')
                 .whereRaw('request_for_helps.id = notifications.question_id')
                 .where('request_for_helps.friend_id', userId)
+                .orderBy('created_at', 'desc')
             );
         });
 

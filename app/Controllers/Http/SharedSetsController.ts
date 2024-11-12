@@ -78,7 +78,7 @@ export default class SharedSetsController {
   // Отримання всіх записів
   public async index({ response }: HttpContextContract) {
     try {
-      const sharedSets = await SharedSet.all()
+      const sharedSets = await SharedSet.query().select('*').orderBy('created_at', 'desc')
       return response.ok({ message: 'SharedSets retrieved successfully', sharedSets })
     } catch (error) {
       return response.internalServerError({ message: 'Failed to retrieve SharedSets', error: error.message })
