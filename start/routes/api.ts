@@ -63,7 +63,6 @@ Route.group(() => {
 
 Route.group(() => {
   Route.group(() => {
-    Route.get('/sets', 'SetsController.index')
     Route.post('/sets', 'SetsController.create')
     Route.get('/sets/:id', 'SetsController.show')
     Route.put('/sets/:id', 'SetsController.update')
