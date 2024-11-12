@@ -236,6 +236,8 @@ Route.group(() => {
     Route.delete('/subscription-types/:id', 'SubscriptionTypesController.delete')
 
     Route.post('/subscription', 'SubscriptionsController.create')
+    Route.get('/subscription', 'SubscriptionsController.getUserSubscriptions')
+
   }).middleware("auth:api")
 }).prefix("/api");
 
