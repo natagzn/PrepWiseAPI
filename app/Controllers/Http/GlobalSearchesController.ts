@@ -70,7 +70,8 @@ export default class GlobalSearchesController {
    *                         type: string
    *                         example: "ivanpetrenko"
    */
-  public async globalSearch({ request, response }: HttpContextContract) {
+  public async globalSearch({auth, request, response }: HttpContextContract) {
+    const userId = (await auth.authenticate()).userId
     const query = request.input('query')
 
     // Пошук по сетах
@@ -78,6 +79,7 @@ export default class GlobalSearchesController {
       .where('access', true)
       .andWhere('name', 'LIKE', `%${query}%`)
       .select('question_set_id', 'name')
+      .orderBy('created_at', 'desc')
 
     // Пошук по ресурсах
     const resources = await Resource.query()
@@ -87,6 +89,7 @@ export default class GlobalSearchesController {
           .orWhere('description', 'LIKE', `%${query}%`)
       })
       .select('resource_id', 'title', 'description')
+      .orderBy('created_at', 'desc')
 
     // Пошук по користувачах
     const users = await User.query()
@@ -94,6 +97,7 @@ export default class GlobalSearchesController {
         builder
           .orWhere('username', 'LIKE', `%${query}%`)
       })
+      .andWhereNot('userId', userId) 
       .select('userId', 'username')
 
     // Повертаємо результати
