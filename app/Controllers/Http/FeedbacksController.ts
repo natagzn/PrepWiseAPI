@@ -145,7 +145,7 @@ export default class FeedbacksController {
  * /api/feedback-all:
  *   get:
  *     summary: "Отримати статистику відгуків за поточний місяць"
- *   tags:
+ *     tags:
  *       - Feedbacks
  *     description: |
  *       Цей метод повертає статистику відгуків за поточний місяць:

@@ -213,181 +213,38 @@ export default class QuestionsController {
 
 
 
-  /*public async export({ response, request }: HttpContextContract) {
-    const format = request.input('format') // Очікуємо значення 'pdf', 'word' або 'excel'
-    
-    // Отримання всіх запитань
-    const questions = await Question.query()
 
-    if (format === 'pdf') {
-      // Експорт у PDF
-      const doc = new PDFDocument()
-      response.header('Content-Disposition', 'attachment; filename=questions.pdf')
-      response.type('application/pdf')
-      
-      doc.pipe(response)
-      doc.fontSize(18).text('Questions List', { align: 'center' })
-      
-      questions.forEach((question) => {
-        doc
-          .moveDown()
-          .fontSize(12)
-          .text(`Question ID: ${question.questionId}`)
-          .text(`Content: ${question.content}`)
-          .text(`Answer: ${question.answer}`)
-          .text(`Status: ${question.status ? 'Active' : 'Inactive'}`)
-          .text(`Created At: ${question.createdAt.toFormat('yyyy-MM-dd HH:mm')}`)
-      })
-      
-      doc.end()
-      
-    } else if (format === 'word') {
-      // Експорт у Word
-      const doc = new Document({
-        sections: [{
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({ text: 'Questions List', bold: true, size: 32 }),
-              ],
-              alignment: 'center',
-            }),
-            ...questions.map((question) =>
-              new Paragraph({
-                children: [
-                  new TextRun({ text: `Question ID: ${question.questionId}\n`, bold: true }),
-                  new TextRun(`Content: ${question.content}\nAnswer: ${question.answer}\nStatus: ${question.status ? 'Active' : 'Inactive'}\nCreated At: ${question.createdAt.toFormat('yyyy-MM-dd HH:mm')}\n`),
-                ],
-              })
-            ),
-          ],
-        }],
-      })
-      
-      const buffer = await Packer.toBuffer(doc)
-      response.header('Content-Disposition', 'attachment; filename=questions.docx')
-      response.type('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-      response.send(buffer)
-      
-    } else if (format === 'excel') {
-      // Експорт у Excel
-      const workbook = new ExcelJS.Workbook()
-      const worksheet = workbook.addWorksheet('Questions')
-      
-      worksheet.columns = [
-        { header: 'Question ID', key: 'questionId', width: 15 },
-        { header: 'Content', key: 'content', width: 50 },
-        { header: 'Answer', key: 'answer', width: 50 },
-        { header: 'Status', key: 'status', width: 10 },
-        { header: 'Created At', key: 'createdAt', width: 20 },
-      ]
-      
-      questions.forEach((question) => {
-        worksheet.addRow({
-          questionId: question.questionId,
-          content: question.content,
-          answer: question.answer,
-          status: question.status ? 'Active' : 'Inactive',
-          createdAt: question.createdAt.toFormat('yyyy-MM-dd HH:mm'),
-        })
-      })
-      
-      response.header('Content-Disposition', 'attachment; filename=questions.xlsx')
-      response.type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-      
-      await workbook.xlsx.write(response.response)
-    } else {
-      return response.status(400).json({ message: 'Invalid format specified' })
-    }
-  }*/
-
-  /*public async export({auth, params, response }: HttpContextContract) {
-    try {
-      // Отримання всіх питань з бази даних
-      const questions = await Question.query()
-
-
-      const user = await auth.authenticate();
-
-      // Отримання сету за його ID
-      const set = await Set.query()
-        .where('QuestionSet_id', params.id)
-        .preload('user') // Загрузка автора сету
-        .preload('level') // Загрузка рівня сету
-        .preload('questions') // Загрузка питань сету
-        .firstOrFail();
-
-      // Отримуємо категорії, які відносяться до цього сету
-      const categories = await CategoryInSet.query()
-        .where('questionSetId', set.QuestionSet_id)
-        .preload('category') // Загрузка категорії
-        .exec();
-
-      // Перевірка, чи вподобаний сет поточним користувачем
-      const isFavourite = await Favourite.query()
-        .where('questionListId', set.QuestionSet_id)
-        .andWhere('userId', user.userId)
-        .first();
-
-
-
-
-
-
-
-
-
-
-      // Створення документа Word
-      const doc = new Document({
-        sections: [
-          {
-            properties: {},
-            children: questions.map((question) => {
-              return new Paragraph({
-                children: [
-                  new TextRun({
-                    text: `ID Питання: ${question.questionId}`,
-                    bold: true,
-                  }),
-                  new TextRun({
-                    text: `\nСтатус: ${question.status ? 'Активний' : 'Неактивний'}`,
-                  }),
-                  new TextRun({
-                    text: `\nВміст: ${question.content}`,
-                  }),
-                  new TextRun({
-                    text: `\nВідповідь: ${question.answer}\n\n`,
-                  }),
-                ],
-              })
-            }),
-          },
-        ],
-      })
-
-      // Генерація файлу Word
-      const buffer = await Packer.toBuffer(doc)
-      const filePath = params.path // Збереження на диск C
-
-      // Запис файлу на диск
-      fs.writeFileSync(filePath, buffer)
-
-      // Відправка документа для завантаження
-      response.header(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      )
-      response.header('Content-Disposition', 'attachment; filename=questions-export.docx')
-
-      return response.stream(fs.createReadStream(filePath))
-    } catch (error) {
-      console.error('Error generating Word document:', error)
-      return response.status(500).json({ message: 'Error generating Word document', error })
-    }
-  }*/
-
-
+/**
+ * @swagger
+ * /api/questions-export-word/{path}/{setId}:
+ *   get:
+ *     summary: Експортує сет питань у форматі Word
+ *     description: Generates a Word document with questions, categories, and other information from the set.
+ *     tags: [Sets]
+ *     parameters:
+ *       - in: path
+ *         name: setId
+ *         required: true
+ *         description: ID сета, який потрібно експортувати.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Успішне створення та завантаження документа Word.
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Невірне значення параметра `setId` або помилка доступу до сета.
+ *       404:
+ *         description: Сет не знайдений за вказаним `setId`.
+ *       500:
+ *         description: Помилка на сервері під час генерації документа.
+ *     security:
+ *       - bearerAuth: []
+ */
 
 
   public async exportSetToWord({ params, auth, response }: HttpContextContract) {
@@ -396,7 +253,7 @@ export default class QuestionsController {
   
       // Отримання сету та пов'язаної інформації
       const set = await Set.query()
-        .where('QuestionSet_id', params.id)
+        .where('QuestionSet_id', params.setId)
         .preload('user')
         .preload('level')
         .preload('questions')
@@ -455,7 +312,6 @@ export default class QuestionsController {
                       new TableCell({ children: [new Paragraph('Вміст')] }),
                       new TableCell({ children: [new Paragraph('Відповідь')] }),
                       new TableCell({ children: [new Paragraph('Дата створення')] }),
-                      new TableCell({ children: [new Paragraph('Дата оновлення')] }),
                     ],
                   }),
                   // Додавання даних про питання
@@ -488,8 +344,8 @@ export default class QuestionsController {
   
       // Збереження документа
       // Генерація файлу Word
-      const buffer = await Packer.toBuffer(doc)
-      const filePath = params.path // Збереження на диск C
+      /*const buffer = await Packer.toBuffer(doc)
+      const filePath = 'D:' // Збереження на диск C
 
       // Запис файлу на диск
       fs.writeFileSync(filePath, buffer)
@@ -499,11 +355,43 @@ export default class QuestionsController {
         'Content-Type',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       )
-      response.header('Content-Disposition', 'attachment; filename=questions-export.docx')
+      response.header('Content-Disposition', 'attachment; filename=questions-export.docx')*/
+
+
+      const directoryPath = params.path;
+    const fileName = `/questions-export-${Date.now()}.docx`; // Унікальне ім'я файлу
+    const filePath = directoryPath+fileName;
+
+    // Перевірка чи існує директорія
+    if (!fs.existsSync(directoryPath)) {
+      // Якщо директорія не існує, створюємо її
+      fs.mkdirSync(directoryPath, { recursive: true });
+    }
+
+    // Генерація файлу Word
+    const buffer = await Packer.toBuffer(doc);
+
+    // Запис файлу на диск
+    fs.writeFileSync(filePath, buffer);
+
+    // Відправка документа для завантаження
+    response.header(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
+    response.header('Content-Disposition', `attachment; filename=${fileName}`);
+
+    return response.stream(fs.createReadStream(filePath));
     } catch (error) {
       return response.status(500).json({ message: 'Не вдалося експортувати сет', error: error.message || error });
     }
   }
+
+
+
+
+
+
 
 
   public async exportToExcel({ response }: HttpContextContract) {

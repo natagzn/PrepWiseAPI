@@ -219,15 +219,15 @@ try{
 
 /**
  * @swagger
- * /api/subscription-all:
+ * /get-monthly-subscription-stats:
  *   get:
- *     summary: Отримати статистику підписок за поточний місяць
- *     description: Цей метод повертає загальну кількість підписок за поточний місяць і кількість підписок по дням.
- *   tags:
- *     - Subscriptions
+ *     summary: Отримує статистику підписок за поточний місяць
+ *     description: Повертає загальну кількість підписок та статистику за днями для поточного місяця.
+ *     tags:
+ *       - Subscriptions
  *     responses:
  *       200:
- *         description: Статистика підписок за поточний місяць.
+ *         description: Успішна відповідь з даними по підписках.
  *         content:
  *           application/json:
  *             schema:
@@ -235,49 +235,26 @@ try{
  *               properties:
  *                 totalSubscriptions:
  *                   type: integer
- *                   description: Загальна кількість підписок у поточному місяці.
+ *                   description: Загальна кількість підписок за поточний місяць.
  *                 dailySubscriptions:
  *                   type: array
+ *                   description: Статистика підписок по дням.
  *                   items:
  *                     type: object
  *                     properties:
  *                       date:
  *                         type: string
  *                         format: date
- *                         description: Дата, для якої надана статистика.
+ *                         description: Дата підписки.
  *                       count:
  *                         type: integer
- *                         description: Кількість підписок за цей день.
- *         examples:
- *           application/json:
- *             value:
- *               totalSubscriptions: 120
- *               dailySubscriptions:
- *                 - date: "2024-11-01"
- *                   count: 15
- *                 - date: "2024-11-02"
- *                   count: 18
- *                 - date: "2024-11-03"
- *                   count: 10
+ *                         description: Кількість підписок у цей день.
  *       500:
- *         description: Помилка сервера при отриманні статистики.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Опис помилки.
- *                 error:
- *                   type: string
- *                   description: Деталі помилки.
- *         examples:
- *           application/json:
- *             value:
- *               message: "Failed to retrieve subscription stats"
- *               error: "Database query error"
+ *         description: Помилка на сервері під час отримання статистики.
+ *     security:
+ *       - bearerAuth: []
  */
+
 
 public async getMonthlySubscriptionStats() {
   // Визначаємо перший день і останній день поточного місяця
