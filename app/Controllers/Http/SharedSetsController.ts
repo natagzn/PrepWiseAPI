@@ -125,7 +125,8 @@ export default class SharedSetsController {
   
         // Формуємо масив з інформацією про користувачів та можливістю редагування
         const usersWithEditPermission = sharedSets.map((sharedSet) => ({
-          id: sharedSet.user.userId,
+          id:sharedSet.id,
+          userId: sharedSet.user.userId,
           username: sharedSet.user.username,
           edit: sharedSet.edit,
         }))
