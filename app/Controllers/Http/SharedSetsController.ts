@@ -115,18 +115,34 @@ export default class SharedSetsController {
    */
   // Отримання одного запису
   public async show({ params, response }: HttpContextContract) {
-    try {
-      const sharedSet = await SharedSet.find(params.id)
-
-      if (!sharedSet) {
-        return response.notFound({ message: 'SharedSet not found' })
+      try {
+        const { id } = params // Отримуємо set_id з параметрів запиту
+  
+        // Отримуємо всі записи з SharedSet, де setId дорівнює запитаному
+        const sharedSets = await SharedSet.query()
+          .where('setId', id)
+          .preload('user') // Завантажуємо пов'язані моделі користувачів
+  
+        // Формуємо масив з інформацією про користувачів та можливістю редагування
+        const usersWithEditPermission = sharedSets.map((sharedSet) => ({
+          id: sharedSet.user.userId,
+          username: sharedSet.user.username,
+          edit: sharedSet.edit,
+        }))
+  
+        return response.status(200).json({
+          message: 'Users with edit permissions retrieved successfully',
+          users: usersWithEditPermission,
+        })
+      } catch (error) {
+        console.error('Error retrieving users with edit permissions:', error)
+        return response.status(500).json({
+          message: 'Failed to retrieve users with edit permissions',
+          error: error.message || 'Unknown error',
+        })
       }
-
-      return response.ok({ message: 'SharedSet retrieved successfully', sharedSet })
-    } catch (error) {
-      return response.internalServerError({ message: 'Failed to retrieve SharedSet', error: error.message })
     }
-  }
+  
 
 
   /**
@@ -379,8 +395,6 @@ export default class SharedSetsController {
  *       500:
  *         description: Внутрішня помилка сервера при отриманні наборів питань
  */
-
-
 public async getSharedSets({ auth, response }: HttpContextContract) {
   try {
     const currentUser = await auth.authenticate();
