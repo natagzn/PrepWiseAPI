@@ -813,7 +813,7 @@ if (isSubscribedToTarget) {
  *         description: Користувач з вказаною електронною поштою не знайдений
  */
   public async resetPassword({ request, response }) {
-    const { email, resetCode, newPassword } = request.all()
+    const { email, resetCode } = request.all()
 
     // Знаходимо користувача
     const user = await User.query().where('email', email).first()
