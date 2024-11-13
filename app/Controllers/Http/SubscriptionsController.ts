@@ -219,7 +219,7 @@ try{
 
 /**
  * @swagger
- * /get-monthly-subscription-stats:
+ * /api/subscription-all:
  *   get:
  *     summary: Отримує статистику підписок за поточний місяць
  *     description: Повертає загальну кількість підписок та статистику за днями для поточного місяця.

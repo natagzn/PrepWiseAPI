@@ -327,11 +327,7 @@ export default class QuestionsController {
                             new Paragraph(new Date(question.createdAt.toJSDate()).toLocaleString()),
                           ],
                         }),
-                        new TableCell({
-                          children: [
-                            new Paragraph(new Date(question.updatedAt.toJSDate()).toLocaleString()),
-                          ],
-                        }),
+                        
                       ],
                     })
                   ),
