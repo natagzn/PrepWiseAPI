@@ -7,6 +7,8 @@ import Resource from 'App/Models/Resource'
 import People from 'App/Models/People'
 import ResetCode from 'App/Models/ResetCode'
 import CodeForNewUser from 'App/Models/CodeForNewUser'
+import Subscription from 'App/Models/Subscription'
+
 
 import { DateTime } from 'luxon'
 //import { sendResetPasswordEmail } from 'App/Utils/EmailService'  // Приклад функції для відправки email
@@ -58,6 +60,33 @@ export async function confirmEmail(email: string, resetCode: string) {
 
 export default class UsersController {
 
+
+
+  public async isSubscriptionActive(userId: number): Promise<boolean> {
+    try {
+      // Знайдемо останню підписку цього користувача
+      const subscription = await Subscription.query()
+        .where('userId', userId)
+        .orderBy('createdAt', 'desc')  // Сортуємо по даті створення, щоб отримати останню
+        .first()
+  
+      // Якщо підписки немає, повертаємо false
+      if (!subscription) {
+        return false
+      }
+  
+      // Перевіряємо, чи дата закінчення підписки більше поточної дати
+      if (subscription.date > DateTime.local()) {
+        return true
+      }
+  
+      // Якщо підписка закінчилася, повертаємо false
+      return false
+    } catch (error) {
+      console.error('Помилка перевірки підписки:', error)
+      throw new Error('Не вдалося перевірити підписку')
+    }
+  }
   /**
    * @swagger
    * /api/profile:
@@ -99,12 +128,15 @@ export default class UsersController {
     try {
       // Отримуємо аутентифікованого користувача
       const user = await auth.authenticate()
+      const isActive = await this.isSubscriptionActive(user.userId)
 
       // Витягуємо дані профілю, окрім пароля
       const userProfile = await User.query()
-        .select('user_id', 'name', 'surname', 'username', 'email', 'avatar_url', 'bio', 'subscription_type', 'location')
+        .select('user_id', 'name', 'surname', 'username', 'email', 'avatar_url', 'subscription_type', 'bio', 'location')
         .where('user_id', user.userId)
         .firstOrFail()
+
+        userProfile.subscriptionType = isActive ? 'premium' : 'basic'
 
       return response.ok(userProfile)
     } catch (error) {
