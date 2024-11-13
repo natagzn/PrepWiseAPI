@@ -838,14 +838,91 @@ if (isSubscribedToTarget) {
     }
 
     // Оновлення пароля користувача
-    user.password = newPassword
-    await user.save()
+    //user.password = newPassword
+    //await user.save()
 
     // Видалення коду з бази даних після використання
     await storedCode.delete()
 
     return response.status(200).json({ message: 'Password reset successfully' })
   }
+
+
+
+
+  /**
+ * @swagger
+ * /api/update-password:
+ *   put:
+ *     summary: Оновлення пароля користувача
+ *     description: Дозволяє користувачеві оновити свій пароль за допомогою електронної пошти.
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: body
+ *         name: updatePassword
+ *         description: Дані для оновлення пароля користувача.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             email:
+ *               type: string
+ *               description: Електронна пошта користувача, для якого потрібно оновити пароль.
+ *               example: user@example.com
+ *             newPassword:
+ *               type: string
+ *               description: Новий пароль користувача.
+ *               example: newSecurePassword123
+ *     responses:
+ *       200:
+ *         description: Пароль успішно оновлено.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Password reset successfully
+ *       404:
+ *         description: Користувача з такою електронною поштою не знайдено.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Помилка при оновленні пароля.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error updating password
+ */
+
+  public async updatePassword({ request, response }) {
+    const { email, newPassword } = request.all()
+
+    // Знаходимо користувача
+    const user = await User.query().where('email', email).first()
+
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' })
+    }
+
+    // Оновлення пароля користувача
+    user.password = newPassword
+    await user.save()
+    return response.status(200).json({ message: 'Password reset successfully' })
+  }
+
 
 
 

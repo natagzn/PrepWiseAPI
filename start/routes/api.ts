@@ -12,6 +12,7 @@ Route.group(()=>{
 
   Route.post("/reset-password", "UsersController.sendResetPasswordEmail");
   Route.post("/check-reset-code", "UsersController.resetPassword");
+  Route.post("/update-password", "UsersController.updatePassword");
 
 
 Route.group(()=>{
