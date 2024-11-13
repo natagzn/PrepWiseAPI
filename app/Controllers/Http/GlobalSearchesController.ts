@@ -86,7 +86,7 @@ export default class GlobalSearchesController {
       .where((builder) => {
         builder
           .where('title', 'LIKE', `%${query}%`)
-          .orWhere('description', 'LIKE', `%${query}%`)
+          .orWhere('description', 'ILIKE', `%${query}%`)
       })
       .select('resource_id', 'title', 'description')
       .orderBy('created_at', 'desc')

@@ -548,4 +548,82 @@ public async show({ params, auth, response }: HttpContextContract) {
       });
     }
   }
+
+
+
+
+
+
+/**
+ * @swagger
+ * /api/folders-author/:id:
+ *   get:
+ *     summary: Перевірка, чи є поточний користувач автором папки
+ *     tags: [Folders]
+ *     description: Цей метод перевіряє, чи є поточний користувач автором папки за її id.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID папки, яку потрібно перевірити
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Користувач є автором папки
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isAuthor:
+ *                   type: boolean
+ *                   example: true
+ *       404:
+ *         description: Користувач не є автором папки
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isAuthor:
+ *                   type: boolean
+ *                   example: false
+ *       500:
+ *         description: Помилка при перевірці автора папки
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error checking folder author"
+ *                 error:
+ *                   type: string
+ *                   example: "Detailed error message"
+ */
+  public async checkIfUserIsAuthor({ params, auth, response }: HttpContextContract) {
+    try {
+      // Отримуємо поточного користувача
+      const user = await auth.authenticate()
+
+      // Отримуємо ID папки з параметрів запиту
+      const folderId = params.id
+
+      // Перевіряємо, чи є користувач автором папки
+      const folder = await Folder.query()
+        .where('folderId', folderId)
+        .where('userId', user.userId) // Перевіряємо, чи належить папка поточному користувачу
+        .first()
+
+      if (folder) {
+        return response.status(200).json({ isAuthor: true }) // Користувач є автором папки
+      } else {
+        return response.status(404).json({ isAuthor: false }) // Користувач не є автором папки
+      }
+    } catch (error) {
+      return response.status(500).json({ message: 'Error checking folder author', error })
+    }
+  }
 }

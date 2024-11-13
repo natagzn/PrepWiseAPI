@@ -98,6 +98,8 @@ Route.group(() => {
     Route.post('/folders/:id/add-set', 'FoldersController.addSetToFolder')
     Route.get('/folders-with-all', 'FoldersController.getUserFoldersWithSetsAndQuestions')
     Route.delete('/folders-set', 'FoldersController.removeSetFromFolder')
+    Route.get('/folders-author/:id', 'FoldersController.checkIfUserIsAuthor')
+
 
   }).middleware("auth:api")
 }).prefix("/api");
