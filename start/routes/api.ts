@@ -240,6 +240,7 @@ Route.group(() => {
 
     Route.post('/subscription', 'SubscriptionsController.create')
     Route.get('/subscription', 'SubscriptionsController.getUserSubscriptions')
+    Route.get('/subscription-all', 'SubscriptionsController.getMonthlySubscriptionStats')
 
   }).middleware("auth:api")
 }).prefix("/api");

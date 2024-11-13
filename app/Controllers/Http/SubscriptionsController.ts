@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { DateTime } from 'luxon'
 import Subscription from 'App/Models/Subscription'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 
 export default class SubscriptionsController {
@@ -214,4 +215,98 @@ try{
 }
 }
 
+
+
+/**
+ * @swagger
+ * /api/subscription-all:
+ *   get:
+ *     summary: Отримати статистику підписок за поточний місяць
+ *     description: Цей метод повертає загальну кількість підписок за поточний місяць і кількість підписок по дням.
+ *   tags:
+ *     - Subscriptions
+ *     responses:
+ *       200:
+ *         description: Статистика підписок за поточний місяць.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalSubscriptions:
+ *                   type: integer
+ *                   description: Загальна кількість підписок у поточному місяці.
+ *                 dailySubscriptions:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                         description: Дата, для якої надана статистика.
+ *                       count:
+ *                         type: integer
+ *                         description: Кількість підписок за цей день.
+ *         examples:
+ *           application/json:
+ *             value:
+ *               totalSubscriptions: 120
+ *               dailySubscriptions:
+ *                 - date: "2024-11-01"
+ *                   count: 15
+ *                 - date: "2024-11-02"
+ *                   count: 18
+ *                 - date: "2024-11-03"
+ *                   count: 10
+ *       500:
+ *         description: Помилка сервера при отриманні статистики.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Опис помилки.
+ *                 error:
+ *                   type: string
+ *                   description: Деталі помилки.
+ *         examples:
+ *           application/json:
+ *             value:
+ *               message: "Failed to retrieve subscription stats"
+ *               error: "Database query error"
+ */
+
+public async getMonthlySubscriptionStats() {
+  // Визначаємо перший день і останній день поточного місяця
+  const startOfMonth = DateTime.local().startOf('month')
+  const endOfMonth = DateTime.local().endOf('month')
+
+  // Загальна кількість підписок в поточному місяці
+  const totalSubscriptions = await Subscription.query()
+    .whereBetween('createdAt', [startOfMonth.toISO(), endOfMonth.toISO()])
+    .count('* as total')
+
+    const totalCount = totalSubscriptions[0]?.$extras?.total ?? 0
+
+  // Кількість підписок за днями в поточному місяці
+  const subscriptionsByDay = await Database
+  .from('subscriptions')
+  .whereBetween('created_at', [startOfMonth.toSQL(), endOfMonth.toSQL()])
+  .select(Database.raw('DATE(created_at) as date'))
+  .count('* as count')
+  .groupByRaw('DATE(created_at)')  // Додаємо це поле в групування
+  .orderBy('date', 'asc')
+
+
+  return {
+    totalSubscriptions: totalCount,
+    dailySubscriptions: subscriptionsByDay.map((row) => ({
+      date: row.date,
+      count: row.count,
+    })),
+  }
+}
 }

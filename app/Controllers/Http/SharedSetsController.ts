@@ -762,10 +762,10 @@ public async checkUserAccess({ auth, params, response }: HttpContextContract) {
 /**
  * @swagger
  * /api/hared-sets-premium:
- *   get:
+ *   delete:
  *     summary: Check if the user's subscription is still active and clean up shared sets if expired.
  *     tags:
- *       - Subscription
+ *       - Subscriptions
  *     security:
  *       - bearerAuth: []
  *     responses:
