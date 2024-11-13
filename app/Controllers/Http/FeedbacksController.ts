@@ -1,5 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Feedback from 'App/Models/Feedback'
+import { DateTime } from 'luxon'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 
 /**
@@ -134,6 +136,85 @@ export default class FeedbacksController {
         message: 'Failed to retrieve feedbacks',
         error: error.message,
       })
+    }
+  }
+
+
+  /**
+ * @swagger
+ * /api/feedback-all:
+ *   get:
+ *     summary: "Отримати статистику відгуків за поточний місяць"
+ *   tags:
+ *       - Feedbacks
+ *     description: |
+ *       Цей метод повертає статистику відгуків за поточний місяць:
+ *       - Загальна кількість відгуків, залишених протягом поточного місяця.
+ *       - Кількість відгуків, залишених кожного дня протягом поточного місяця.
+ *     responses:
+ *       '200':
+ *         description: "Статистика відгуків успішно отримана."
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalFeedbacks:
+ *                   type: integer
+ *                   description: |
+ *                     Загальна кількість відгуків, залишених у поточному місяці.
+ *                     Це число відображає загальну кількість відгуків, зареєстрованих
+ *                     з початку поточного місяця.
+ *                 dailyFeedbacks:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                         description: |
+ *                           Дата, коли був залишений відгук.
+ *                       count:
+ *                         type: integer
+ *                         description: |
+ *                           Кількість відгуків, залишених на кожен конкретний день
+ *                           протягом поточного місяця.
+ *       '400':
+ *         description: "Некоректний запит або відсутність даних."
+ *       '500':
+ *         description: "Помилка серверу при обробці запиту."
+ */
+
+
+  public async getMonthlyFeedbacks() {
+    // Визначаємо перший день і останній день поточного місяця
+    const startOfMonth = DateTime.local().startOf('month')
+    const endOfMonth = DateTime.local().endOf('month')
+  
+    // Загальна кількість підписок в поточному місяці
+    const totalFeedbacks = await Feedback.query()
+      .whereBetween('createdAt', [startOfMonth.toISO(), endOfMonth.toISO()])
+      .count('* as total')
+  
+      const totalCount = totalFeedbacks[0]?.$extras?.total ?? 0
+  
+    // Кількість підписок за днями в поточному місяці
+    const feedbacksByDay = await Database
+    .from('feedbacks')
+    .whereBetween('created_at', [startOfMonth.toSQL(), endOfMonth.toSQL()])
+    .select(Database.raw('DATE(created_at) as date'))
+    .count('* as count')
+    .groupByRaw('DATE(created_at)')  // Додаємо це поле в групування
+    .orderBy('date', 'asc')
+  
+  
+    return {
+      totalFeedbacks: totalCount,
+      dailyFeedbacks: feedbacksByDay.map((row) => ({
+        date: row.date,
+        count: row.count,
+      })),
     }
   }
 }

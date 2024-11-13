@@ -28,6 +28,8 @@ Route.group(()=>{
 
   Route.post('/feedback', 'FeedbacksController.store')
   Route.get('/feedback', 'FeedbacksController.index')
+  Route.get('/feedback-all', 'FeedbacksController.getMonthlyFeedbacks')
+
 
   }).middleware("auth:api");
 }).prefix("/api");
