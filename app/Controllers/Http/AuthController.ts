@@ -93,6 +93,9 @@ export default class AuthController {
    *           schema:
    *             type: object
    *             properties:
+   *               username:
+   *                 type: string
+   *                 example: username
    *               email:
    *                 type: string
    *                 example: user@example.com
