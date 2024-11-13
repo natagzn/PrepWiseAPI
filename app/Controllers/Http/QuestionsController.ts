@@ -309,7 +309,7 @@ export default class QuestionsController {
                     children: [
                       new TableCell({ children: [new Paragraph('ID Питання')] }),
                       new TableCell({ children: [new Paragraph('Статус')] }),
-                      new TableCell({ children: [new Paragraph('Вміст')] }),
+                      new TableCell({ children: [new Paragraph('Питання')] }),
                       new TableCell({ children: [new Paragraph('Відповідь')] }),
                       new TableCell({ children: [new Paragraph('Дата створення')] }),
                     ],
@@ -319,7 +319,7 @@ export default class QuestionsController {
                     new TableRow({
                       children: [
                         new TableCell({ children: [new Paragraph(question.questionId.toString())] }),
-                        new TableCell({ children: [new Paragraph(question.status ? 'Активний' : 'Неактивний')] }),
+                        new TableCell({ children: [new Paragraph(question.status ? 'Вже знаю' : 'Ще вивчається')] }),
                         new TableCell({ children: [new Paragraph(question.content)] }),
                         new TableCell({ children: [new Paragraph(question.answer || '')] }),
                         new TableCell({

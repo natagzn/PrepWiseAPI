@@ -109,7 +109,7 @@ export default class NotificationsController {
    *         description: Аутентифікація не вдалася
    */
 
-  public async getUserNotifications({ auth, response }: HttpContextContract) {
+  /*public async getUserNotifications({ auth, response }: HttpContextContract) {
     try {
       // Аутентифікація користувача
       const user = await auth.authenticate();
@@ -169,5 +169,99 @@ export default class NotificationsController {
       console.error('Error fetching notifications:', error);
       return response.status(500).json({ message: 'Помилка при отриманні сповіщень' });
     }
-  }
+  }*/
+
+
+
+
+    public async getUserNotifications({ auth, response }: HttpContextContract) {
+      try {
+        // Аутентифікація користувача
+        const user = await auth.authenticate();
+        const userId = user.userId;
+  
+        // Пошук відповідей на питання, які належать до сетів, створених поточним користувачем
+const userAnswers = await HelpAnswer.query()
+.whereExists((questionQuery) =>
+  questionQuery
+    .from('questions')
+    .whereRaw('questions.question_id = help_answers.question_id') // Зв'язок з питанням
+    .whereExists((setQuery) =>
+      setQuery
+        .from('sets')
+        .whereRaw('sets.question_set_id = questions.list_id') // Зв'язок з сетом
+        .where('sets.user_id', userId) // Перевіряємо, чи поточний користувач є автором сету
+    )
+)
+.select('id'); // Отримуємо тільки ID відповіді
+
+        
+const notifications = await Notification.query()
+  .preload('type') // Завантажуємо тип сповіщення
+  .preload('answer') // Завантажуємо пов'язану відповідь
+  .whereIn('answer_id', userAnswers.map(answer => answer.id)) // Фільтруємо сповіщення по знайденим ID відповідей
+  .orderBy('created_at', 'desc'); // Сортуємо за датою створення
+
+
+
+  const userRequestIds = await RequestForHelp.query()
+  .where('friend_id', userId) // Перевіряємо, чи поточний користувач є другом
+  .select('id'); // Отримуємо тільки ID запитів про допомогу
+
+  const notifications1 = await Notification.query()
+  .preload('type') // Завантажуємо тип сповіщення
+  .preload('question') // Завантажуємо пов'язаний запит про допомогу
+  .whereIn('question_id', userRequestIds.map(request => request.id)) // Фільтруємо сповіщення по знайденим ID запитів
+  .orderBy('created_at', 'desc'); // Сортуємо за датою створення
+
+
+
+  const formattedNotifications = await Promise.all(
+    notifications.map(async (notification) => {
+      await notification.load('type');
+  
+      const typeId = notification.typeId;
+      const typeName = notification.type?.name; 
+      const date = notification.createdAt;
+      const requestId = notification.questionId;
+      const answerId = notification.answerId;
+  
+      return {
+        typeId,
+        typeName, 
+        date,
+        requestId,
+        answerId,
+      };
+    })
+  );
+
+  const formattedNotifications1 = await Promise.all(
+    notifications1.map(async (notification) => {
+      await notification.load('type');
+  
+      const typeId = notification.typeId;
+      const typeName = notification.type?.name; 
+      const date = notification.createdAt;
+      const requestId = notification.questionId;
+      const answerId = notification.answerId;
+  
+      return {
+        typeId,
+        typeName, 
+        date,
+        requestId,
+        answerId,
+      };
+    })
+  );
+  const combinedNotifications = [...formattedNotifications, ...formattedNotifications1];
+
+  return response.status(200).json(combinedNotifications);
+
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        return response.status(500).json({ message: 'Помилка при отриманні сповіщень', error });
+      }
+    }
 }
